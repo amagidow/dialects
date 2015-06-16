@@ -1,0 +1,46 @@
+{% extends "baseJQ.html" %}
+{% block head %}
+
+    <script type="text/javascript" charset="utf8" src="/static/DataTables/media/js/jquery.dataTables.min.js"> </script>
+    <link rel="stylesheet" type="text/css" href="/static/DataTables/media/css/jquery.dataTables.min.css"/>
+{% endblock %}
+
+{% block body %}
+    <div>
+    {{ extraInfo }}
+    </div>
+    <table id="results">
+    <caption>{{ tableCaption }}</caption>
+    <thead>
+        <tr>
+            {% for header in headerList %}
+                <th align = "left">{{ header }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+        <tbody>
+        {% for item in allItems %}
+            <tr>
+            {% for cell in item %}
+                <td>{{ cell }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+        </tbody>
+    <tfoot>
+        <tr>
+            {% for header in headerList %}
+                <th align = "left">{{ header }}</th>
+            {% endfor %}
+        </tr>
+    </tfoot>
+    </table>
+<script type="text/javascript">
+
+$(document).ready(function(){
+    $("#results").dataTable({
+        paging: false
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,90 @@
+<input type="hidden" name="sharedtags" value = {{ dataStruct.sharedtags|join("_") }} form="complexform">
+<table id="complextable" border="1px dashed black" border-collapse:"collapse">
+    <thead>
+{% set colMult = 1 %}
+{% if dataStruct.annotation %}
+    {% set colMult = 2 %} {# make columns doubly side if annotation is needed #}
+{% endif %}
+    {% if dataStruct.subcolumns %} {# this section builds the first row of the header #}
+        <tr> {# inherently spans 2 rows if there are subcolumns #}
+        <th rowspan="2" {% if dataStruct.subrows %}colspan="2"{% endif %}> {{ dataStruct.paradigmname }}</th> {# this needs to span 2 columns if there are sub-rows #}
+        {% for column in dataStruct.columns %}
+                {% if column.subheaders %} {# This is for the top level header #}
+                    <th colspan= "{{ column.subheaders|length * colMult }}">{{ column.headername }}</th>
+                {% else %}
+                    <th rowspan="2">{{ column.headername }}</th> {# This is if there's no subheaders, but top-level #}
+                    <th rowspan="2" class = "annotationcol">{{ column.headername }}: Annotation</th>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        <tr>
+            {% for column in dataStruct.columns %}
+                {% if column.subheaders %}
+                    {% for subhead in column.subheaders %}
+                        <th>{{ subhead.headername }}</th>
+                        <th class = "annotationcol">{{ subhead.headername }}: Annotation</th>
+                    {% endfor %}
+                {% endif %}
+            {% endfor %}
+        </tr>
+    {% else %} {# If no sub-columns, create only one row #}
+        <tr>
+        <th> {{ dataStruct.paradigmname }}</th>
+            {% for column in dataStruct.columns %}
+                <th colspan="{{ colMult }}">{{column.headername}}</th>
+            {% endfor %}
+        </tr>
+    {% endif %}
+</thead>
+    {% for row in dataStruct.rows %} {# must iterate twice if doubled #}
+        {% if row.subheaders %}
+            <tr>
+            <th rowspan="2">{{ row.headername }}</th>
+            {% for subrow in row.subheaders %}
+                {% if not loop.first %}<tr>{% endif %}
+                <th>{{ subrow.headername }}</th>
+                {# Iterate through columns, interpolate row values from header and subheader #}
+                {% for column in dataStruct.columns -%} {# most complicated - multi row mutli column #}
+                    {% for subcol in column.subheaders %}
+                        {# join is used to convert lists back to strings #}
+                       {% set cellglosstags = row.headertags + subrow.headertags +column.headertags %}
+                       {% set cellalltags = cellglosstags + subcol.headertags %}
+
+                        {% set relatedtags = "" %}
+                        {% if subcol.relatedTo %}
+                            {% set relatedtags = dataStruct.getGloss(cellglosstags) + ":" + cellglosstags|join("_") + "_" + column.getsubtags(subcol.relatedTo)|join("_") %}
+                        {% endif %}
+                        {{ cellaction(cellglosstags,cellalltags,relatedtags) }}
+                    {% else %} {# multiple rows since column #}
+                        {% set cellalltags = row.headertags + subrow.headertags +column.headertags %}
+                        {% set cellID = dataStruct.getGloss(cellalltags) + ":" + cellalltags|join("_") %}
+                        {{ cellaction(cellalltags, cellalltags) }} {# no difference between the gloss and cell tags here #}
+                       {# <td>{{ row.headername }},{{ subrow.headername }},{{ column.headername }}</td> #}
+                    {% endfor %}
+                {% endfor %}
+                {% if not loop.first %}</tr>{% endif %}
+            {% endfor %}
+            </tr>
+        {% else %} {# single row #}
+            <tr>
+               <th {% if dataStruct.subrows %}colspan = "2"{% endif %}>{{ row.headername }}</th>
+                {% for column in dataStruct.columns %} {# single row, multiple columns #}
+                    {% for subcol in column.subheaders -%}
+                       {% set cellglosstags = row.headertags + column.headertags -%}
+                       {% set cellalltags = cellglosstags + subcol.headertags -%}
+                        {% set relatedtags = "" %}
+                        {% if subcol.relatedTo %}
+                            {% set relatedtags = dataStruct.getGloss(cellglosstags) + ":" + cellglosstags|join("_") + "_" + column.getsubtags(subcol.relatedTo)|join("_") %}
+                        {% endif %}
+                        {{ cellaction(cellglosstags, cellalltags,relatedtags) }}
+                    {% else %}
+                        {% set cellalltags = row.headertags + column.headertags %}
+                        {% set cellID = dataStruct.getGloss(cellalltags) + ":" + cellalltags|join("_") %}
+                        {{ cellaction(cellalltags,cellalltags) }}
+                    {% endfor %}
+                {% endfor %}
+            </tr>
+        {% endif %}
+    {% endfor %}
+    </thead>
+</table>

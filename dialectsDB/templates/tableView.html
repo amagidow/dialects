@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+
+<table>
+    <tr>
+        <th>Normalized form</th>
+        <th>Gloss</th>
+        <th>Annotation</th>
+        <th>Tags</th>
+        <th>Source</th>
+        <th>Contributor</th>
+    </tr>
+{% for item in object_list  %}
+    <tr>
+        <td>{{item.normalizedEntry}}</td>
+        <td>{{item.gloss}}</td>
+        <td>{{ item.annotation }}</td>
+        <td>
+            {% for tag in item.entryTags.all %}
+                {{ tag }},
+            {% endfor %}
+        </td>
+        <td> {{ item.sourceDoc }} : {{ item.sourceLocation }}</td>
+        <td> {{item.contributor}} </td>
+    </tr>
+{% endfor %}
+</table>
+{% endblock %}

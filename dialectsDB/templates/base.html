@@ -1,0 +1,17 @@
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>{{ pageTitle }}</title>
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/base.css" />
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/dashboard.css" />
+    <link rel="stylesheet" type="text/css" href="/static/mystyle.css" />
+{% block head %}
+{% endblock %}
+</head>
+<body>
+{% block body %}
+    {% csrf_token %}
+
+{% endblock %}
+</body>
+</html>

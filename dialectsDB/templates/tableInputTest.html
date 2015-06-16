@@ -1,0 +1,76 @@
+{% extends "baseJQ.html" %}
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+
+
+
+    <form name="pronounForm" id="pronounForm" method = "GET">
+
+    <div>
+          {{ dialectForm }}
+    </div>
+
+    <input type="hidden" name="sharedtags" value = "closed-class_pronoun.independent" form="pronounForm">
+    <table id="pronouns" class="display">
+    <thead>
+        <tr>
+        <th></th>
+        <th>Singular</th>
+        <th>Annotation</th>
+        <th>Plural</th>
+        <th>Annotation</th>
+        </tr>
+    </thead>
+
+    <tr>
+        <th>1st</th>
+        <td><input type="text" id="*I:1st-person_singular" name="*I:1st-person_singular"></td>
+        <td><input type="text" id="*annotation|I:1st-person_singular" name="*annotation|I:1st-person_singular"</td>
+        <td><input type="text" id="*We:1st-person_plural" name="*We:1st-person_plural"></td>
+        <td><input type="text" id ="*annotation|We:1st-person_plural" name="*annotation|We:1st-person_plural"</td>
+    </tr>
+    <tr>
+        <th>2nd m</th>
+        <td><input type="text" id="*I:1st-person_singular>variant.eq|I:1st-person_singular" name="*I:1st-person_singular>variant.eq|I:1st-person_singular"></td>
+        <td><input type="text" id="*annotation|I:1st-person_singular>variant.cond|I:1st-person_singular" name="*annotation|I:1st-person_singular>variant.cond|I:1st-person_singular"</td>
+        <td><input type="text"</td>
+        <td><input type="text"</td>
+    </tr>
+    <tr>
+        <th>2nd f</th>
+        <td><input type="text"></td>
+        <td><input type="text"></td>
+        <td><input type="text"</td>
+        <td><input type="text"</td>
+    </tr>
+    <tr>
+        <th>3rd m</th>
+        <td><input type="text"></td>
+        <td><input type="text"</td>
+        <td><input type="text"</td>
+        <td><input type="text"></td>
+  </tr>
+  <tr>
+        <th>3rd f</th>
+        <td><input type="text"></td>
+        <td><input type="text"</td>
+        <td><input type="text"</td>
+        <td><input type="text"></td>
+  </tr>
+
+
+    </table>
+
+    <input type="submit" value="Submit" />
+    </form>
+    <script type="javascript">
+    $(document).ready( function () {
+    $('#pronouns').DataTable();
+} );
+    </script>
+
+    {{ output|linebreaks }}
+{% endblock %}

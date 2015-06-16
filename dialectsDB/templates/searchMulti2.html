@@ -1,0 +1,114 @@
+{% extends "baseJQ.html" %}
+
+{% ifequal initialSource "/leafletmap/" %}
+<!--leaflet tags loaded here -->
+{% load leaflet_tags %}
+<!--geojson tags loaded here -->
+{% load geojson_tags %}
+{% endifequal %}
+
+{% block head %}
+<script type="text/javascript" charset= "utf8" src="/static/jquery.formset.js"> </script>
+<script type="text/javascript" charset= "utf8" src="/static/myautocomplete.js"></script>
+
+    {% ifequal initialSource "/leafletmap/" %}
+
+<!--leaflet js loaded here -->
+    {% leaflet_js %}
+<!--leaflet css loaded here -->
+    {% leaflet_css %}
+
+    {% endifequal %}
+
+
+      {% ifequal initialSource "/tableview/" %}
+    <script type="text/javascript" charset="utf8" src="/static/DataTables/media/js/jquery.dataTables.min.js"> </script>
+    <link rel="stylesheet" type="text/css" href="/static/DataTables/media/css/jquery.dataTables.min.css"/>
+{% endifequal %}
+
+<style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+        .leaflet-container {  /* all maps */
+            width:  100%;
+            height: 900px;
+        }
+	</style>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="ui-state-highlight ui-corner-all" style="margin-top: 20px; padding: 0 .7em;">
+<strong>Instructions:</strong> Enter search parameters into the appropriate box. Click the plus button to add another search, and the minus button to remove one.
+    Color will change the colors in the map view, or provide another category to sort by in the list view. Two searches with the same color will be treated as an "AND" search.
+    The searches for Arabic words or annotations use a regex search. The search for gloss and tags use a 'contained in' search, so you may enter a partial gloss or tags to get a wider set of results.
+</div>
+
+<form id= "searchform"  method = "POST">
+{% csrf_token %}
+
+    {{ dataFormset.management_form }}
+    <table class = "ui-widget" width = "90%">
+        <thead>
+            <tr>
+                <th>Color</th>
+                <th>Arabic Word</th>
+                <th>Gloss</th>
+                <th>Annotation</th>
+                <th>Tags</th>
+            </tr>
+        </thead>
+        <tbody border="0" cellpadding = "0" cellspacing="0">
+        {% for f_form in dataFormset %}
+            <tr>
+            <td> {{ f_form.colorinput}}</td>
+            <td> {{ f_form.wordSearch}}</td>
+            <td> {{ f_form.glossSearch}}</td>
+            <td> {{ f_form.annotationSearch}}</td>
+            <td> {{ f_form.tagSearch}}</td>
+            </tr>
+                        <br>
+       {% endfor %}
+        </tbody>
+    </table>
+
+<input type="submit" value="Submit" />
+{% if csvlink %}
+    <a href = "/mapcsv/">CSV Export</a>
+{% endif %}
+
+
+ </form>
+
+{% if searchquery != '' %}
+    <p>Your search: {{ searchquery|linebreaks }}</p>
+    {% endif %}
+<!-- This needs to be customized for each page -->
+    <script type="text/javascript">
+        $('#searchform tbody tr').formset( //this adds the formset controls
+            {
+                prefix: 'ms',
+              addText: "+",
+                deleteText: "-",
+                addCssClass: "addremovebutton",
+                deleteCssClass: "addremovebutton",
+                added: function(row){
+                   enableAutoComplete(row);
+                }
+            });
+</script>
+
+<div name ="results" id="results" width="100%" height="1000" border = "1px solid black">
+{% ifequal initialSource "/leafletmap/" %}
+    {% include "LeafletMap2.html" %}
+    {% leaflet_map "main" callback="main_map_init" %}
+{% endifequal %}
+{% ifequal initialSource "/tableview/" %}
+    {% include "DTview2.html" %}
+{% endifequal %}
+</div>
+
+{% endblock %}

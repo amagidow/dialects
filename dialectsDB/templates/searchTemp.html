@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block head %}
+
+{% endblock %}
+
+{% block body %}
+<form action = {{ targetPage }} method = "get" target = "results">
+{% csrf_token %}
+{{ searchForm|safe }}
+
+<input type="submit" value="Submit" />
+ </form>
+
+
+<iframe name ="results" id="results" src="{{ initialSource }}" width="100%" height="1000">
+Your browser does not support iFrames.
+</iframe>
+
+{% endblock %}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Mockup Independent Pronoun Form</title>
+</head>
+<body>
+<form>
+    {% csrf_token %}
+
+    <div>
+   {{ dialectForm }}
+     </div>
+
+   <div>
+       <table class="tg">
+  <tr>
+    <th class="tg-031e"></th>
+    <th class="tg-031e">Singular</th>
+    <th class="tg-031e">Plural</th>
+  </tr>
+  <tr>
+    <td class="tg-031e">1st</td>
+    <td class="tg-031e"><input type="text" id="1stSing" name="1stSing"></td>
+    <td class="tg-031e"><input type="text" id="1stPl"></td>
+  </tr>
+  <tr>
+    <td class="tg-031e">2nd m<br></td>
+    <td class="tg-031e"><input type="text"></td>
+    <td class="tg-031e"><input type="text"></td>
+  </tr>
+  <tr>
+    <td class="tg-031e">2nd f<br></td>
+    <td class="tg-031e"><input type="text"></td>
+    <td class="tg-031e"><input type="text"></td>
+  </tr>
+  <tr>
+    <td class="tg-031e">3rd m<br></td>
+    <td class="tg-031e"><input type="text"></td>
+    <td class="tg-031e"><input type="text"></td>
+  </tr>
+  <tr>
+    <td class="tg-031e">3rd f</td>
+    <td class="tg-031e"><input type="text"></td>
+    <td class="tg-031e"><input type="text"></td>
+  </tr>
+</table>
+       </div>
+    <input type="submit" value="Submit" />
+</body>
+</html>

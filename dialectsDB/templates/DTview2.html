@@ -1,0 +1,35 @@
+
+    <table id="tableresults">
+    <thead>
+        <tr>
+            <th>Datum</th>
+            <th>Gloss</th>
+            <th>Annotation</th>
+            <th>Dialect</th>
+            <th>Tags</th>
+            <th>Source</th>
+            <th>Color</th>
+        </tr>
+    </thead>
+    <tfoot>
+        <tr>
+            <th>Datum</th>
+            <th>Gloss</th>
+            <th>Annotation</th>
+            <th>Dialect</th>
+            <th>Tags</th>
+            <th>Source</th>
+            <th>Color</th>
+        </tr>
+    </tfoot>
+    </table>
+<script type="text/javascript">
+var dataIn = {{ results|safe }} ;
+
+$(document).ready(function(){
+    $("#tableresults").dataTable({
+        "data" : dataIn,
+        paging: false
+    });
+});
+</script>

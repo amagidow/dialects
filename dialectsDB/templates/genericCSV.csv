@@ -1,0 +1,2 @@
+{{ request.session.csvheader|safe }}
+{{ request.session.csvout|safe }}

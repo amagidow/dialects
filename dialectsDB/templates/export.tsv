@@ -1,0 +1,3 @@
+{{ dialectData.1.TSVheader }}
+{% for datum in dialectData %}{{ datum.TSVserializer}}
+{% endfor %}

@@ -1,0 +1,47 @@
+{% extends "baseJQ.html" %}
+{% block head %}
+
+
+{% endblock %}
+
+{% block body %}
+        <div class="ui-state-highlight ui-corner-all" style="margin-top: 20px;margin-bottom: 20px; padding: 0 .7em;">
+<strong>Instructions:</strong> Choose the shared data for the input, then enter your data into the paradigm. You do not need to fill in every cell to submit - blank cells will not be submitted.
+        You can separate variants with a / or you can use a set of parentheses to indicate optionality. You can combine both, and all variants will be placed into the database.
+</div>
+
+{##################MACROS#########################}
+{% macro cellaction(cellglosstags, cellalltags, relatetags = '') -%}
+{% set glossTags = dataStruct.getGloss(cellglosstags) %}
+    {% if glossTags != "NoGloss" %}
+{% set cellID = glossTags + ":" + cellalltags|join("_") -%}
+{% if relatetags -%}
+     {% set cellID = relatedtags + ">" + subcol.relatedHow + "|" + cellID -%}
+{% endif -%}
+  <td><input type = "text" id = "*{{ cellID|safe }}" name = "*{{ cellID|safe }}"></td>
+{% if dataStruct.annotation -%}
+    {% set annotationID = "*annotation|" + cellID %}
+    <td><textarea rows = "1" cols="20" id = "{{ annotationID|safe }}" name = "{{ annotationID|safe }}"></textarea></td>
+{% endif -%}
+    {% else %}
+        {# do nothing in this cell, leave it blank #}
+        <td></td>
+        {% if dataStruct.annotation -%}
+    <td></td>
+{% endif -%}
+
+    {% endif %}
+{%- endmacro %}
+
+
+    <form name="complexform" id="complexform" method = "POST">
+{% csrf_token %}
+        <div>
+          {{ dialectForm|safe }}
+    </div>
+     <input type="submit" value="Submit" />
+
+{% include "ComplexTableOnly.jinja" %}
+</form>
+
+{% endblock %}

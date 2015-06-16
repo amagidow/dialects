@@ -1,0 +1,126 @@
+{% extends "baseJQ.html" %}
+{% block head %}
+<script type="text/javascript" charset= "utf8" src="/static/jquery.formset.js"></script>
+<script type="text/javascript" charset= "utf8" src="/static/myautocomplete.js"></script>
+
+<script type="text/javascript" charset="utf8" src="/static/DataTables/media/js/jquery.dataTables.min.js"> </script>
+<link rel="stylesheet" type="text/css" href="/static/DataTables/media/css/jquery.dataTables.min.css"/>
+{% endblock %}
+
+{% block body %}
+
+        <div class="ui-state-highlight ui-corner-all" style="margin-top: 20px;margin-bottom: 20px; padding: 0 .7em;">
+<strong>Instructions:</strong> First, choose an element as your main topic of inquiry. If you have multiple query elements, they will be treated as an "AND".
+            Then, choose the related query elements that you are interested in investigating. Each query will become its own column. In the displayed table, the headers remind you of the query used to generate them.
+</div>
+
+
+<form method="post" name = "dialectForm" id="dialectForm">
+{% csrf_token %}
+   {{ mainFormset.management_form }}
+    <table class = "ui-widget" width = "90%" id="mainsearch">
+    <caption>Main Form</caption>
+        <thead>
+            <tr>
+                <th>Arabic Word</th>
+                <th>Gloss</th>
+                <th>Annotation</th>
+                <th>Tags</th>
+            </tr>
+        </thead>
+        <tbody border="0" cellpadding = "0" cellspacing="0">
+        {% for f_form in mainFormset %}
+            <tr>
+            <td> {{ f_form.wordSearch}}</td>
+            <td> {{ f_form.glossSearch}}</td>
+            <td> {{ f_form.annotationSearch}}</td>
+            <td> {{ f_form.tagSearch}}</td>
+            </tr>
+                        <br>
+       {% endfor %}
+        </tbody>
+    </table>
+
+   {{ relatedFormset.management_form }}
+    <table class = "ui-widget" width = "90%" id="relatedsearch">
+    <caption>Related Form</caption>
+        <thead>
+            <tr>
+                <th>Arabic Word</th>
+                <th>Gloss</th>
+                <th>Annotation</th>
+                <th>Tags</th>
+            </tr>
+        </thead>
+        <tbody border="0" cellpadding = "0" cellspacing="0">
+        {% for f_form in relatedFormset %}
+            <tr>
+            <td> {{ f_form.wordSearch}}</td>
+            <td> {{ f_form.glossSearch}}</td>
+            <td> {{ f_form.annotationSearch}}</td>
+            <td> {{ f_form.tagSearch}}</td>
+            </tr>
+                        <br>
+       {% endfor %}
+        </tbody>
+    </table>
+<input type="submit" form="dialectForm"/>
+</form>
+
+<div class = "framelike" id="resultsDiv">
+{% if headerRows %}
+    <table border="1px" id = "results">
+        <thead>
+        {% for header in headerRows %}
+            <th>{{ header }}</th>
+        {% endfor %}
+        </thead>
+    <tbody>
+        {% for row in bodyRows %}
+        <tr>
+            {% for cell in row %}
+                <td>{{ cell }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+{% endif %}
+<script type="text/javascript">
+$(document).ready(function(){
+    $("#results").dataTable({
+        paging: false
+    });
+});
+</script>
+    </div>
+<!-- This needs to be customized for each page -->
+    <script type="text/javascript">
+        //$(document).ready(function(){
+        $('#mainsearch tbody tr').formset( //this adds the formset controls
+            {
+                prefix: '{{ mainFormset.prefix }}',
+                formCssClass: 'dynamic-formset1', //is this necessary? important?
+              addText: "+",
+                deleteText: "-",
+                addCssClass: "addremovebutton",
+                deleteCssClass: "addremovebutton",
+                added: function(row){
+                   enableAutoComplete(row);
+                }
+            });
+        $('#relatedsearch tbody tr').formset( //this adds the formset controls
+            {
+                prefix: '{{ relatedFormset.prefix }}',
+                formCssClass: 'dynamic-formset2',
+              addText: "+",
+                deleteText: "-",
+                addCssClass: "addremovebutton",
+                deleteCssClass: "addremovebutton",
+                added: function(row){
+                   enableAutoComplete(row);
+                }
+            });
+          //  });
+</script>
+{% endblock body %}

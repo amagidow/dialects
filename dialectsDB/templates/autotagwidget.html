@@ -1,0 +1,10 @@
+{# Basic autocompleting tag widget via PrimeUI #}
+<script type="text/javascript">
+    var {{ widgetIDJS }}List = new Array({{ itemlist|safe }});
+    $(document).ready(function(){
+        $("#id_{{ widgetID }}").puiautocomplete({
+             completeSource:{{ widgetIDJS }}List,
+            multiple: true
+     });
+    });
+</script>

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block head %}
+        <script type="text/javascript" charset= "utf8" src="/static/jquery-1.11.2.min.js"> </script>
+    <script type="text/javascript" charset="utf8" src="/static/DataTables/media/js/jquery.dataTables.min.js"> </script>
+    <link rel="stylesheet" type="text/css" href="/static/DataTables/media/css/jquery.dataTables.min.css"/>
+{% endblock %}
+
+{% block body %}
+    <table id="results">
+    <thead>
+        <tr>
+            <th>Datum</th>
+            <th>Gloss</th>
+            <th>Annotation</th>
+            <th>Dialect</th>
+            <th>Tags</th>
+            <th>Source</th>
+            <th>Color</th>
+        </tr>
+    </thead>
+    <tfoot>
+        <tr>
+            <th>Datum</th>
+            <th>Gloss</th>
+            <th>Annotation</th>
+            <th>Dialect</th>
+            <th>Tags</th>
+            <th>Source</th>
+            <th>Color</th>
+        </tr>
+    </tfoot>
+    </table>
+<script type="text/javascript">
+var dataIn = {{ request.session.results|safe }} ;
+
+$(document).ready(function(){
+    $("#results").dataTable({
+        "data" : dataIn,
+        paging: false
+    });
+});
+</script>
+{% endblock %}

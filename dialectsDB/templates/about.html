@@ -1,0 +1,37 @@
+{% extends "baseJQ.html" %}
+{% block head %}
+   {% endblock %}
+
+{% block body %}
+<div class="ui-state-highlight ui-corner-all" style="margin-top: 20px;margin-bottom: 20px; margin-left: 100px;margin-right: 100px; padding: 0 .7em;">
+<h1 align="center"> Database of Arabic Dialects (ضاد)</h1>
+    <p>
+The Database of Arabic Dialects (ضاد) is a project to collect the vast amount of data, published and unpublished,
+    on Arabic dialects in a searchable electronic format. The project is aimed at researchers and students of the Arabic language.
+    This website is the public interface to the database, and focuses on allowing for intuitive and controlled data input,
+    and powerful data visualization. Data input relies on contributions from scholars in the field - user contributions are listed prominently on the website so that
+        contributors can receive credit for their work. The interface will allow for control over data - not all data must be public,
+        so  users can take advantage of the features of the website even for private data that is part of a work in progress.</p>
+
+<p>The database itself is designed around the central concept of the 'language datum', a single piece of linguistic data.
+    Each datum can be any kind of string with meaningful, searchable linguistic information, so in theory the database could
+hold anything from individual phonemes to idioms. Every datum is marked with a set of tags to allow for easy searching. Each datum is linked to a dialect and
+to a bibliographic entry, and each datum has permission information and is linked to its contributor. Datums may be in relationships with other datums,
+ with the types of relationships expressed via a different set of tags.</p>
+
+<p>The website is based on a Django framework, with a PostgreSQL database backend.
+    Many pages rely on Jquery, Datatables and Leaflet, and some are rendered using Jinja2 templates.
+    All of these tools are open-source, free software, and we plan to open-source this website as well to contribute back to the community.
+    The design of the database is flexible enough to handle almost any language, and many of the database tools are easily adapted to handle other languages.
+    The tag ontologies are entirely free to be defined by the users, and so it should be a useful tool for any language with high dialectal diversity
+    dispersed across a large geographical area.
+</p>
+
+<p>This website was developed primarily by Alexander Magidow at the Univeristy of Rhode Island where he is an Assistant Professor of Arabic.
+    The current state of the project is the culmination of nearly 3 years of research and development.
+    He would like to thank Yonatan Belinkov for his help in the design of the database framework, for his suggestion to use Django,
+    and for contributing some code to the project. </p>
+
+</div>
+
+{% endblock %}

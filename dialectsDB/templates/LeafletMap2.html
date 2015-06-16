@@ -1,0 +1,37 @@
+
+
+    <div id="map"></div>
+    <script type="text/javascript">
+
+
+        {# var collection = [ {{ serialized|safe }} ]; #}
+        var collection2 = [ {{ results|safe }} ];
+      {#  {% for item in qs_results %}{{ item|geojsonfeature:"popupinfo"|safe }}{% endfor %}; #}
+
+
+      function onEachFeature(feature, layer) {
+    if (feature.properties && feature.properties.popupinfo) {
+      layer.bindPopup(feature.properties.popupinfo, {maxHeight: 200 });
+    }
+  }
+        options = {  center: [30.05,31.2333],
+                      zoom: 3};
+      //var options = {height: 180px;}
+      function main_map_init(map, options) {
+          L.geoJson(collection2,
+                  {
+                      onEachFeature: onEachFeature,
+                      style: function(feature) {
+        return {color: feature.properties.color}; },
+                      pointToLayer: function(feature, latlng) {
+        return new L.CircleMarker(latlng, {radius: 10, fillOpacity: 0.7});
+    },
+                  }).addTo(map);
+          map.setView(new L.LatLng(13, 30),4);
+
+      }
+
+
+
+    </script>
+

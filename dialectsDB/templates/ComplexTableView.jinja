@@ -1,0 +1,46 @@
+{% extends "baseJQ.html" %}
+{% block head %}
+<script type="text/javascript" charset= "utf8" src="/static/myautocomplete.js"></script>
+{% endblock %}
+
+{% block body %}
+
+    <div class="ui-state-highlight ui-corner-all" style="margin-top: 20px;margin-bottom: 20px; padding: 0 .7em;">
+<strong>Instructions:</strong> Choose a paradigm that you would like to view, then select the dialects in which you would like to see that paradigm.
+</div>
+
+<form method="post" name = "dialectForm" id="dialectForm">
+{% csrf_token %}
+    <table class="ui-widget" style="font-size: 1em;">
+{{ dialectForm|safe }}
+        </table>
+<input type="submit" form="dialectForm">
+</form>
+
+<div class = "framelike" id="results">
+
+{##################MACROS#########################}
+{% set currentDialect = '' %}
+
+{% macro cellaction(cellglosstags, cellalltags, relatetags = '') -%}
+
+    {% set allTags = cellalltags+cellglosstags+dataStruct.sharedtags %}
+    {% set myQuery = dataStruct.getDatumsFromTags(currentDialect,allTags) %}
+    {% set entryString = [] %}
+    {% set annotString = [] %}
+    {% for entry in myQuery %}
+        {% if entryString.append(entry.normalizedEntry) %}{% endif %} {# hack to run the .append #}
+        {% if annotString.append(entry.annotation) %}{% endif %}
+    {% endfor %}
+    <td>{{ entryString|join("<br>")|safe }}</td>
+    <td>{{ annotString|join("<br>")|safe }}</td>
+{%- endmacro %}
+
+{% for item in dialectList %}
+    {% set currentDialect = item %}
+    <h3>{{ currentDialect }}</h3>
+    {% include "ComplexTableOnly.jinja" %}
+    <br>
+{% endfor %}
+</div>
+{% endblock %}

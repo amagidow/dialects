@@ -1,0 +1,86 @@
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>{{ pageTitle }}</title>
+
+
+<!-- jQueryUI generated CSS -->
+<link rel="stylesheet" type="text/css" href="/static/jquery-ui.css"/>
+<link rel="stylesheet" type="text/css" href="/static/jquery-ui.theme.css"/>
+<link rel="stylesheet" type="text/css" href="/static/primeui-1.1.css"/>
+<!-- my own CSS -->
+<link rel="stylesheet" type="text/css" href="/static/mystyle.css"/>
+
+
+
+<!-- jQuery -->
+<script type="text/javascript" charset= "utf8" src="/static/jquery-1.11.2.min.js"> </script>
+<!-- PrimeUI javascript -->
+<script type="text/javascript" charset="utf8" src="/static/primeui-1.1.js"> </script>
+<!-- jQueryUI javascript -->
+<script type="text/javascript" charset="utf8" src="/static/jquery-ui.js"> </script>
+
+
+
+{% block head %}
+{% endblock %}
+
+</head>
+<body>
+<div class = "titlebar"><a href = "/about.html">Database of Arabic Dialects <span class = "arabicTitle">ضاد</span></a></div>
+<!-- Top menu bar -->
+<ul id = "topmenu">
+    <li><a href ="/about.html">About</a>
+    <ul>
+        <li><a>Info Lists</a>
+            <ul>
+                <li><a href="/list/tags/">Entry Tags</a></li>
+                <li><a href="/list/dialects/">Dialects</a></li>
+                <li><a href="/list/contributors/">User Contributions of Data</a></li>
+            </ul>
+        </li>
+    </ul>
+    </li>
+    <li><a>Data Input</a>
+        <ul>
+            <li><a href="/inputForm">General Input</a></li>
+            <li><a>Paradigm Input</a>
+            <ul> <!-- This automatically populates the list of paradigms, BUT at the cost of requiring we pass paradigmDict to all views-->
+            {% if paradigmDict|length > 0 %} <!-- This should catch it gracefully and simply not populate it -->
+                <!-- Hitting paradigmDict -->
+                {% for name, object in paradigmDict %}
+                    <!-- {{ name }} -->
+                    <!-- {{ object.paradigmname }} -->
+                    <li><a href="/complexIn/{{ name }}/">{{ object.paradigmname }}</a></li>
+                {% endfor %}
+            {% endif %}
+                </ul>
+            </li>
+        </ul>
+    </li>
+    <li><a>Data Visualization</a>
+        <ul>
+            <li><a href="/search/map/">Map search</a></li>
+            <li><a href="/search/list/">List search</a></li>
+            <li><a href="/complexOut/">Paradigm search</a></li>
+            <li><a href="/search/cross/">Cross search</a></li>
+        </ul>
+    </li>
+</ul>
+
+
+{% csrf_token %}
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('#topmenu').puimenubar();
+    });
+
+</script>
+
+{% block body %}
+{% endblock %}
+
+<div class = "footerbar">Version .90 Al-Ḥira. 2015 by Alexander Magidow</div>
+</body>
+</html>

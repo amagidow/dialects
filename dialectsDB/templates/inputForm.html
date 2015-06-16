@@ -1,0 +1,48 @@
+{% extends "baseJQ.html" %}
+{% block head %}
+<script type="text/javascript" charset= "utf8" src="/static/jquery.formset.js"> </script>
+    <script type="text/javascript" charset= "utf8" src="/static/myautocomplete.js"> </script>
+{% endblock %}
+
+{% block body %}
+    <div class="ui-state-highlight ui-corner-all" style="margin-top: 20px;margin-bottom: 20px; padding: 0 .7em;">
+<strong>Instructions:</strong> Choose the shared information for all of the data that you intend to input, then fill in the information for each individual datum below.
+        Tags are given as a comma-separated list. Glosses are suggested - if a gloss already exists, please use it. Click the plus key to add another datum.
+</div>
+
+    {{ form.errors }}
+{{ form.non_field_errors }}
+<form action="/inputForm/" method="post">
+    {% csrf_token %}
+
+    <div class="ui-widget" style="font-size: 1em;">
+   {{ dialectForm }}
+     </div>
+    {{ dataFormset.management_form }}
+
+        {% for f_form in dataFormset %}
+        <table id="inputform" border-bottom='1px dashed brown' class="ui-widget" style="font-size: 1em;">
+            {{ f_form}}
+        <br>
+
+        </table>
+        {% endfor %}
+
+
+<script type="text/javascript">
+        $('#inputform').formset( //this adds the formset controls
+            {
+              addText: "+",
+                deleteText: "-",
+                addCssClass: "addremovebutton",
+                deleteCssClass: "addremovebutton",
+                added: function(row){
+                   enableAutoComplete(row);
+                }
+            });
+</script>
+
+
+    <input type="submit" value="Submit" />
+</form>
+{% endblock %}
