@@ -1,10 +1,9 @@
 {% extends "baseJQ.html" %}
 {% block head %}
-<script type="text/javascript" charset= "utf8" src="/static/jquery.formset.js"></script>
-<script type="text/javascript" charset= "utf8" src="/static/myautocomplete.js"></script>
+<script type="text/javascript" charset= "utf8" src="{{ STATIC_URL }}jquery.formset.js"></script>
+<script type="text/javascript" charset= "utf8" src="{{ STATIC_URL }}myautocomplete.js"></script>
 
-<script type="text/javascript" charset="utf8" src="/static/DataTables/media/js/jquery.dataTables.min.js"> </script>
-<link rel="stylesheet" type="text/css" href="/static/DataTables/media/css/jquery.dataTables.min.css"/>
+{% include "sourceDT.html" %}
 {% endblock %}
 
 {% block body %}

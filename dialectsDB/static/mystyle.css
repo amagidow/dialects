@@ -27,9 +27,9 @@
     font-size: 1em;
     font-family: Palatino, Georgia, "Times New Roman", Times, serif;
     text-align: center;
-     position: fixed;
+     /*position: fixed;
   bottom: 0;
-    right:0;
+    right:0;*/
 }
 
 .titlebar .arabicTitle {
@@ -37,7 +37,12 @@
     	font-weight: bold;
     font-size: 1.7em;
 }
-
+.titlebar .arabicTitle .versioninfo {
+    font-weight: bold;
+    font-size: .5em;
+    font-family: Palatino, Georgia, "Times New Roman", Times, serif;
+    text-align: right;
+}
 .titlebar a {
     text-decoration: none;
 }

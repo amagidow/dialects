@@ -1,7 +1,5 @@
 from django.shortcuts import render, render_to_response
 from django.forms.models import modelformset_factory, formset_factory
-from django.contrib.gis.shortcuts import render_to_kml
-from django.http import HttpResponseRedirect
 from dialectsDB.models import *
 from dialectsDB.forms import *
 from django.views.generic import ListView
@@ -10,35 +8,8 @@ from dialectsDB.paradigms import *
 from itertools import groupby
 import json
 
+############ Input Forms should ALL be login required for the time being ###################
 
-def map_search(request):
-     return render_to_response('mapSearch.html')
-
-def dtview(request):
-    return render(request,"DTview.html", {"pageTitle": "Datatables view of data"} )
-
-def table_view(request):
-    #just all data right now
-    data = LanguageDatum.objects.all()
-    return render_to_response('tableView.html', {'object_list' : data, 'pageTitle' : "Table View of Data"})
-
-class TableView(ListView):
-    model = LanguageDatum
-    def get_queryset(self):
-        queryToReturn = searchLanguageDatum(self.request)
-        return queryToReturn
-
-def search_List(request):
-    form = NonModelSearchForm()
-    return render_to_response('searchTemp.html', {'pageTitle':"List-Style Search Page" ,'targetPage' : "/tableDJ", 'initialSource': "/tableDJ", 'searchForm' : form })
-
-def search_Map2(request): #renders a search to leafletmap
-    form = NonModelSearchFormColor()
-    return render_to_response('searchTemp.html', {'pageTitle':"Map-Style Search Page", 'targetPage' : "/leafletmap", 'initialSource': "/map", 'searchForm' : form })
-
-def search_Map_Comp(request):
-    form = NonModelSearchForm()
-    return render_to_response('searchTemp.html', {'pageTitle':"Map-Style Search Page", 'targetPage' : "/mapSearchComp", 'initialSource': "/map", 'searchForm' : form })
 
 #Basic free input form view and validation
 def inputForm(request,numSets=1): #default is one, but can be sent more
@@ -79,64 +50,6 @@ def inputForm(request,numSets=1): #default is one, but can be sent more
         #datumForms = formset_factory(DatumIndividualInfo, extra=numSets)
         return render(request, 'inputForm.html',{'pageTitle': "Single Dialect Multi-Datum Input Form", 'paradigmDict': paradigmDict.items(), 'dialectForm' : dialectForm, 'dataFormset': datumForms})
 
-
-def searchMulti(request, numSets=1):
-    numSets = int(numSets)
-    searchForms = formset_factory(NonModelSearchFormColor, extra=numSets)
-    searchquery = ''
-    searchQuery = ''
-    if request.method == "POST":
-        searchresults = searchForms(request.POST, request.FILES)
-        request.session['geojson'] = 'GotToPost'
-        if searchresults.is_valid():
-            formResults = []
-            markers = []
-            #print(searchresults)
-            for form in searchresults:
-                #iterate through forms
-                formTuple = searchLanguageDatumColor(form.cleaned_data)#This no longer works
-                wordSearchText = form.cleaned_data['wordSearch']
-                glossSearchText = form.cleaned_data['glossSearch']
-                annotSearchText = form.cleaned_data['annotationSearch']
-                tagSearchText = form.cleaned_data['tagSearch']
-                color = form.cleaned_data['colorinput']
-                searchQuery += "Color: {} Word: {} Gloss: {} Annotation:{} Tags: {}\n".format(
-                    color, wordSearchText, glossSearchText, annotSearchText, tagSearchText)
-                #print("FormTuple:{}".format(formTuple))
-                formResults.append(formTuple)
-            searchquery = searchQuery
-            formResults.sort(key=lambda x: x[1])
-            for key, group in groupby(formResults, lambda x: x[1]):
-                #print("Key: {}, Group:{}".format(key,group))
-                groupcolor = key #I think this is right
-                finalqueryset = None
-                first = True
-                print("Group:{})".format(group))
-                for member in group:
-                    #print(member)
-                    if first == True:
-                        finalqueryset = member[0] #fill first member
-                        #print("Queryset:{}".format(finalqueryset))
-                        first = False
-                    else:
-                        print("Finalquery set {}".format(finalqueryset.encode('ascii', errors='backslashreplace')))
-                        finalqueryset = finalqueryset & member[0]
-
-                    markers += generateMarkers((finalqueryset,groupcolor))
-            #print("Markers: {}".format(markers))
-            #print(finalqueryset)
-            serialized = []
-            markers = cleanupMarkers(markers)
-            for myobject in markers:
-                serialized.append(geojson.dumps(myobject))
-            serialized = ",".join(serialized)
-            #print(serialized)
-            request.session['geojson'] = serialized
-        return render(request, 'searchMulti.html', {'pageTitle': 'Map search', 'paradigmDict': paradigmDict.items(),  'dataFormset': searchForms, 'targetPage' : "/leafletmap/", 'initialSource': "/leafletmap/"})
-    else:
-        request.session['geojson'] = ""
-        searchForms = formset_factory(NonModelSearchFormColor, extra=numSets,)
-        return render(request, 'searchMulti.html', {'pageTitle': 'Map search', 'paradigmDict': paradigmDict.items(),  'dataFormset': searchForms, 'targetPage' : "/leafletmap/", 'initialSource': "/leafletmap/"})
 
 
 def searchMultiType(request, type="map"):
@@ -214,78 +127,29 @@ def searchMultiType(request, type="map"):
                 serialized = ",".join(serialized)
                 #print(serialized)
                 results = serialized
-                request.session['csvout'] = "\n".join(csvserialized)
+                request.session['csvout'] = "\n".join(csvserialized) #This needs to be cleaned of PubNoE data
                 request.session['csvheader'] = "Dialect,Color,Lat,Long" # "self.dialectname, self.color, self.geomLat, self.geomLong"
             elif type=="list":
                 arraylist = [x.dtarray for x in markers]
                 resultsformatted = json.dumps(arraylist)
                 results = resultsformatted
-        return render(request, 'searchMulti2.html', {'pageTitle': pagetitle, 'paradigmDict': paradigmDict.items(),
+        return render(request, 'searchMulti.html', {'pageTitle': pagetitle, 'paradigmDict': paradigmDict.items(),
                                                      'dataFormset': searchresults, 'targetPage' : targetPage, 'initialSource': targetPage,
                                                      'csvlink' : csvLink, 'results' : results, 'searchquery' : searchquery}) #searchresults has to be passed to retain data
     else:
         #results = ""
         searchForms = searchForms(prefix='ms')
-        return render(request, 'searchMulti2.html', {'pageTitle': pagetitle, 'paradigmDict': paradigmDict.items(),  'dataFormset': searchForms,
+        return render(request, 'searchMulti.html', {'pageTitle': pagetitle, 'paradigmDict': paradigmDict.items(),  'dataFormset': searchForms,
                                                      'targetPage' : targetPage, 'initialSource': targetPage, 'csvlink': csvLink, 'results': results,
                                                      'searchquery': searchquery})
 
-def csvMap(request):
-    return render(request, 'genericCSV.csv')
-
-def tsvView(request):
-    dialectData = LanguageDatum.objects.all()
-    return render(request, 'export.tsv', {'dialectData': dialectData})
+#Uses session info loaded in via
 
 
 
-def leafletMap(request):
-
-    #queryTuple = searchLanguageDatum(request)
-    #resultsObj = generateMarkers(queryTuple)
-    #serialized = []
-
-    #for object in resultsObj:
-    #    serialized.append(geojson.dumps(object))
-    #serialized = ",".join(serialized)
-
-    #request.session['geojson'] = serialized
-    #return render(request, 'LeafletMap.html', {'serialized':serialized})
-    return render(request,'LeafletMap.html')
-
-def tableInput(request):
-
-    #Logic for this must be as follows:
-    #Get shared datum information
-    #Retrieve individual datums
-    #Retrieve related datums, relate to default/head data
-    #   This should include variant entry with ~ and () #NOT IMPLEMENTING THIS FOR THE MOMENT
-    #   Honestly, could implement this -> for each datum with targeted header, create the relationship
-    #   Annotation data is kind of a special case
-    #* distinguishes the input data from other form data
-    #Get everything into database-updatable format
 
 
-    if request.method == 'GET':
-        dialectForm = DatumBasicInfoPgNo(request.GET)
-        querydata = request.GET.copy()
-        tags = ""
-        combinedDict = []
-        sharedTags = querydata.get("sharedtags", "").split("_") #wish I could just pop it
-
-        #for each piece of linguistic data, create a list of dictionaries. Each dictionary should contain: "datum", "gloss", "annotation", "tags" (as list?), "relationships"
-        #Relationships: what should they point at? They should point at datum I guess, but only one of them
-        if dialectForm.is_valid():
-            initialObject = dialectForm.save(commit=False)
-            combinedDict = processInputForm(sharedTags, querydata)
-            datumsToObjs(initialObject,combinedDict)
-        return render(request, 'tableInputTest.html', {'output': combinedDict, 'dialectForm': dialectForm})
-    else:
-        dialectForm = DatumBasicInfo()
-        return render(request, 'tableInputTest.html', {'output': "", 'dialectForm': dialectForm})
-
-
-def complexTable(request,paradigmname,toggleAnnot="A"):
+def complexTableInput(request,paradigmname,toggleAnnot="A"): #Input
     combinedDict = []
     retrievedParadigm = paradigmDict[paradigmname]
     if request.method == 'POST':
@@ -308,6 +172,10 @@ def complexTable(request,paradigmname,toggleAnnot="A"):
         dialectForm = DatumBasicInfoPgNo()
     return render(request,'ComplexTableInput.jinja', {'pageTitle': retrievedParadigm.paradigmname,'paradigmDict': paradigmDict.items(), 'output': combinedDict, 'dialectForm': dialectForm, 'dataStruct': retrievedParadigm})
 
+
+
+
+############## View functions which are sensitive to permissions ###############
 def complexTableView(request):
     retrievedParadigm = paradigmDict['independentpronouns'] #random default since something needs to be passed
     if request.method == 'POST':
@@ -323,6 +191,12 @@ def complexTableView(request):
     else:
         dialectForm = ParadigmSearchForm()
     return render(request, 'ComplexTableView.jinja', {'pageTitle': retrievedParadigm.paradigmname, 'paradigmDict': paradigmDict.items(),'dataStruct': retrievedParadigm, 'dialectForm': dialectForm, 'dialectList' : []})
+
+
+
+
+
+
 
 def crossSearchView(request):
     mainSearch = formset_factory(NonModelSearchForm, extra=1)
@@ -364,6 +238,15 @@ def crossSearchView(request):
         crossSearchFS = crossSearch(prefix="cs")
         return render(request, "Cross_search.html", {'pageTitle' : 'Cross Search', 'paradigmDict': paradigmDict.items(), 'mainFormset' : mainSearch(prefix="ms"), 'relatedFormset': crossSearchFS})
 
+def tsvView(request):
+    dialectData = LanguageDatum.objects.all()
+    return render(request, 'export.tsv', {'dialectData': dialectData})
+
+
+def csvMap(request):
+    return render(request, 'genericCSV.csv') #This should be sensitive to PubNoE
+
+############## View functions which are NOT sensitive to permissions ###############
 def taglistview(request):
     headers = ['Tag', 'Explanation']
     allTags = EntryTag.objects.all()
@@ -397,93 +280,3 @@ def contributorslistview(request):
                                           })
 def aboutview(request):
     return render(request, 'about.html', {'pageTitle' : 'About', 'paradigmDict': paradigmDict.items()})
-##################INACTIVE VIEWS KEPT FOR ARCHIVAL PURPOSES#########################################
-
-
-def all_kml(request):
-    #hardcoding this for fun
-    datumsWithN = LanguageDatum.objects.all()
-    #datumsWithN = LanguageDatum.objects.filter(normalizedEntry__contains='n', entryTags__tagText="interr.what")
-    #datumsWithN = LanguageDatum.objects.filter(entryTags__tagText="interr.what")
-    locationsOfns = []
-    for item in datumsWithN:
-        locationsOfns.append(item.dialect.dialectCode) #there's got to be a more python way to do this
-    locations  = Dialect.objects.filter(dialectCode__in=locationsOfns).kml()
-    return render_to_kml("gis/kml/placemarks.kml", {'places' : locations})
-# Create your views here.
-
-def kml_from_langDatum_objects(request): #given a request, show the map
-        initial_Queryset = searchLanguageDatum(request)
-        locationOfns = []
-        for item in initial_Queryset:
-            locationOfns.append(item.dialect.dialectCode) #there's got to be a more python way to do this
-        locationsSet = Dialect.objects.filter(dialectCode__in=locationOfns).kml() #I think I have to call this now, this .kml function is a PITA
-        return render_to_kml("gis/kml/placemarks.kml", {'places' : locationsSet}) #This returns a KML object, is this a problem?
-
-def kml_from_langDatum_objects_complementary(request): #given a request, show the results and the complementary result
-        initial_Queryset = searchLanguageDatum(request)
-        locationOfns = []
-        for item in initial_Queryset:
-            locationOfns.append(item.dialect.dialectCode) #there's got to be a more python way to do this
-
-        locationsSet = Dialect.objects.filter(dialectCode__in=locationOfns).kml() #I think I have to call this now, this .kml function is a PITA
-        for locItem in locationsSet:
-            locItem.style = 'yellowSquare'
-
-        excludedLocationsSet = Dialect.objects.exclude(dialectCode__in=locationOfns).kml()
-        #Should check to see if any data exists so we don't just get every data point
-        for locItem in excludedLocationsSet:
-            locItem.style = 'whiteSquare'
-        #locationsSet = locationsSet + excludedLocationsSet
-
-        return render_to_kml("gis/kml/placemarksIcons2.kml", {'placeSets' : [locationsSet, excludedLocationsSet]}) #This returns a KML object, is this a problem?
-
-def map_page(request):
-     lcount = Dialect.objects.all().count() #don't do anything with this anymore
-     return render_to_response('map.html', {'location_count' : lcount})
-
-def mockup(request):
-    #just all data right now
-    dialectform  = DatumBasicInfo()
-    return render_to_response('pronounmockup.html', {'dialectForm' : dialectform})
-
-##This was used for an interrogative based input scheme
-def interrInput(request):
-    # if this is a POST request we need to process the form data
-    interrTitles = ['Who?' , 'What?', 'When?','Why>', 'How?', 'Where?', 'Where to?', 'Where from?' , 'Which?', 'Interrogative Particle']
-    if request.method == 'POST':
-        # create a form instance and populate it with data from the request:
-        form = DatumBasicInfo(request.POST)
-        form2 = modelformset_factory(DatumIndividualInfo, extra=5) #DatumIndividualInfo(request.POST)
-        # check whether it's valid:
-        if form.is_valid() and form2.is_valid():
-            # process the data in form.cleaned_data as required
-            # ...
-            # redirect to a new URL:
-            newDatumGen = form.save(commit=False)
-            newDatumSpec = form2.save(commit=False)
-            newDatum = LanguageDatum(normalizationStyle =newDatumGen.normalizationStyle,dialect=newDatumGen.dialect,
-                                     sourceDoc=newDatumGen.sourceDoc, contributor=newDatumGen.contributor,
-                                     permissions=newDatumGen.permissions)
-            newDatum.gloss = "What?"
-            newDatum.normalizedEntry = newDatumSpec.normalizedEntry
-            newDatum.originalOrthography = newDatumSpec.originalOrthography
-            newDatum.annotation = newDatumSpec.annotation
-            newDatum.sourceLocation = newDatumSpec.sourceLocation
-            newDatum.save()
-            closedClassTag = EntryTag.objects.get(tagText="closed-class")
-            newDatum.entryTags.add(closedClassTag)
-            interrWhatTag = EntryTag.objects.get(tagText="interr.what")
-            newDatum.entryTags.add(interrWhatTag)
-            return HttpResponseRedirect('/map/')
-
-    # if a GET (or any other method) we'll create a blank form
-    else:
-        form = DatumBasicInfo()
-        form2 = DatumIndividualInfo()
-    return render(request, 'interr.html', {'form': form, 'formset' :form2})
-
-
-def search_Map(request):
-    form = NonModelSearchForm()
-    return render_to_response('searchTemp.html', {'pageTitle':"Map-Style Search Page", 'targetPage' : "/mapSearch", 'initialSource': "/map", 'searchForm' : form })

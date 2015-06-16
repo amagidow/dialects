@@ -1,7 +1,40 @@
 {% extends "baseJQ.html" %}
+
+{% ifequal initialSource "/leafletmap/" %}
+<!--leaflet tags loaded here -->
+{% load leaflet_tags %}
+<!--geojson tags loaded here -->
+{% load geojson_tags %}
+{% endifequal %}
+
 {% block head %}
-<script type="text/javascript" charset= "utf8" src="/static/jquery.formset.js"> </script>
-<script type="text/javascript" charset= "utf8" src="/static/myautocomplete.js"></script>
+{% include "sourceFSAC.html" %}
+
+    {% ifequal initialSource "/leafletmap/" %}
+
+<!--leaflet js loaded here -->
+    {% leaflet_js %}
+<!--leaflet css loaded here -->
+    {% leaflet_css %}
+
+    {% endifequal %}
+
+
+      {% ifequal initialSource "/tableview/" %}
+        {% include "sourceDT.html" %}
+{% endifequal %}
+
+<style>
+		body {
+			padding: 0;
+			margin: 0;
+		}
+        .leaflet-container {  /* all maps */
+            width:  100%;
+            height: 900px;
+        }
+	</style>
+
 {% endblock %}
 
 {% block body %}
@@ -12,7 +45,7 @@
     The searches for Arabic words or annotations use a regex search. The search for gloss and tags use a 'contained in' search, so you may enter a partial gloss or tags to get a wider set of results.
 </div>
 
-<form id= "searchform" action = {# {{ targetPage }} #}"" method = "POST">
+<form id= "searchform"  method = "POST">
 {% csrf_token %}
 
     {{ dataFormset.management_form }}
@@ -48,13 +81,14 @@
 
  </form>
 
-{% if request.session.searchquery != '' %}
-    <p>Your search: {{ request.session.searchquery|linebreaks }}</p>
+{% if searchquery != '' %}
+    <p>Your search: {{ searchquery|linebreaks }}</p>
     {% endif %}
 <!-- This needs to be customized for each page -->
     <script type="text/javascript">
         $('#searchform tbody tr').formset( //this adds the formset controls
             {
+                prefix: 'ms',
               addText: "+",
                 deleteText: "-",
                 addCssClass: "addremovebutton",
@@ -65,8 +99,14 @@
             });
 </script>
 
-<iframe name ="results" id="results" src="{{ initialSource }}" width="100%" height="1000">
-Your browser does not support iFrames.
-</iframe>
+<div name ="results" id="results" width="100%" height="1000" border = "1px solid black">
+{% ifequal initialSource "/leafletmap/" %}
+    {% include "LeafletMap.html" %}
+    {% leaflet_map "main" callback="main_map_init" %}
+{% endifequal %}
+{% ifequal initialSource "/tableview/" %}
+    {% include "DTview.html" %}
+{% endifequal %}
+</div>
 
 {% endblock %}

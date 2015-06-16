@@ -1,12 +1,5 @@
-{% extends "base.html" %}
-{% block head %}
-        <script type="text/javascript" charset= "utf8" src="/static/jquery-1.11.2.min.js"> </script>
-    <script type="text/javascript" charset="utf8" src="/static/DataTables/media/js/jquery.dataTables.min.js"> </script>
-    <link rel="stylesheet" type="text/css" href="/static/DataTables/media/css/jquery.dataTables.min.css"/>
-{% endblock %}
 
-{% block body %}
-    <table id="results">
+    <table id="tableresults">
     <thead>
         <tr>
             <th>Datum</th>
@@ -31,13 +24,12 @@
     </tfoot>
     </table>
 <script type="text/javascript">
-var dataIn = {{ request.session.results|safe }} ;
+var dataIn = {{ results|safe }} ;
 
 $(document).ready(function(){
-    $("#results").dataTable({
+    $("#tableresults").dataTable({
         "data" : dataIn,
         paging: false
     });
 });
 </script>
-{% endblock %}

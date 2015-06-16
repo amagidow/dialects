@@ -5,20 +5,23 @@
 
 
 <!-- jQueryUI generated CSS -->
-<link rel="stylesheet" type="text/css" href="/static/jquery-ui.css"/>
-<link rel="stylesheet" type="text/css" href="/static/jquery-ui.theme.css"/>
-<link rel="stylesheet" type="text/css" href="/static/primeui-1.1.css"/>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jquery-ui.css"/>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}jquery-ui.theme.css"/>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}primeui-1.1.css"/>
 <!-- my own CSS -->
-<link rel="stylesheet" type="text/css" href="/static/mystyle.css"/>
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}mystyle.css"/>
+
+<!-- jQuery javascript -->
+<script type="text/javascript" charset="utf8" src="http://code.jquery.com/jquery-1.11.3.min.js"> </script>
+
+<!-- jQueryUI CDN-->
+<script type="text/javascript" charset= "utf8" src="http://code.jquery.com/ui/1.11.4/jquery-ui.min.js"> </script>
 
 
 
-<!-- jQuery -->
-<script type="text/javascript" charset= "utf8" src="/static/jquery-1.11.2.min.js"> </script>
-<!-- PrimeUI javascript -->
-<script type="text/javascript" charset="utf8" src="/static/primeui-1.1.js"> </script>
-<!-- jQueryUI javascript -->
-<script type="text/javascript" charset="utf8" src="/static/jquery-ui.js"> </script>
+
+<!-- PrimeUI javascript - NOT CDN -->
+<script type="text/javascript" charset="utf8" src="{{ STATIC_URL }}primeui-1.1.js"> </script>
 
 
 
@@ -27,7 +30,9 @@
 
 </head>
 <body>
-<div class = "titlebar"><a href = "/about.html">Database of Arabic Dialects <span class = "arabicTitle">ضاد</span></a></div>
+<div class = "titlebar"><a href = "/about.html">Database of Arabic Dialects
+    <span class = "arabicTitle">     ضاد </span> </a>
+    <span class="versioninfo" style="font-size: .5em;">Version .90 Al-Ḥira. 2015 by Alexander Magidow</span></div>
 <!-- Top menu bar -->
 <ul id = "topmenu">
     <li><a href ="/about.html">About</a>
@@ -43,7 +48,7 @@
     </li>
     <li><a>Data Input</a>
         <ul>
-            <li><a href="/inputForm">General Input</a></li>
+            <li><a href="/inputForm/">General Input</a></li>
             <li><a>Paradigm Input</a>
             <ul> <!-- This automatically populates the list of paradigms, BUT at the cost of requiring we pass paradigmDict to all views-->
             {% if paradigmDict|length > 0 %} <!-- This should catch it gracefully and simply not populate it -->
@@ -81,6 +86,6 @@
 {% block body %}
 {% endblock %}
 
-<div class = "footerbar">Version .90 Al-Ḥira. 2015 by Alexander Magidow</div>
+
 </body>
 </html>
