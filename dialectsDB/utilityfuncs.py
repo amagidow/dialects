@@ -232,7 +232,7 @@ def searchText(request):
     return "Aw: {} G: {} An: {} T: {}".format(wordSearchText,glossSearchText,annotSearchText,tagSearchText)
 
 def searchLanguageDatum(request):
-    queryToReturn = LanguageDatum.objects.exclude(permissions="Private") #ensures that private records are not show, test this!
+    queryToReturn = LanguageDatum.objects.exclude(permissions="Private") #Have permission wrapper function here! 
     wordSearchText = request['wordSearch']
     glossSearchText = request['glossSearch']
     annotSearchText = request['annotationSearch']

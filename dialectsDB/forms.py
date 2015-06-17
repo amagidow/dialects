@@ -4,6 +4,7 @@ from django import forms
 from django.forms import ModelForm,TextInput, Textarea,ValidationError
 from dialectsDB.models import LanguageDatum, EntryTag, Dialect
 from dialectsDB import mywidgets, paradigms
+from django.contrib.auth.models import User
 
 
 ######################FIELDS########################
@@ -40,13 +41,13 @@ class DatumBasicInfo(ModelForm): #This is just to get the basic information that
 
     class Meta:
         model = LanguageDatum
-        fields = ('normalizationStyle','dialect', 'sourceDoc', 'contributor', 'permissions')
+        fields = ('normalizationStyle','dialect', 'sourceDoc', 'permissions')
 
 class DatumBasicInfoPgNo(ModelForm): #This is just to get the basic information that will be shared on a page
 
     class Meta:
         model = LanguageDatum
-        fields = ('normalizationStyle','dialect', 'sourceDoc', 'sourceLocation','contributor', 'permissions')
+        fields = ('normalizationStyle','dialect', 'sourceDoc', 'sourceLocation', 'permissions')
         widgets = {
             'sourceLocation' : TextInput()
         }
@@ -95,6 +96,11 @@ class SearchForm(ModelForm):
             'annotation': TextInput()
         }
 
+
+class LoginForm(ModelForm):
+    class Meta:
+        model = User
+        fields = ('username', 'password')
 
 
 class NonModelSearchForm(forms.Form):

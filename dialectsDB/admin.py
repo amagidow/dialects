@@ -40,6 +40,7 @@ class DialectAdminForm(forms.ModelForm):
         model = Dialect
         centerLoc = forms.PointField(widget=forms.OSMWidget(attrs={
             'display_raw': True}))
+        fields = '__all__'
         #widgets = {
         #    'centerLoc' : widgets.GeopositionWidget #doesn't work :-(
        # }

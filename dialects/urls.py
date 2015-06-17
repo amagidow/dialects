@@ -1,8 +1,10 @@
 from django.conf.urls import patterns, include, url
 from dialectsDB.views import *
 from django.contrib import admin
+from django.contrib.auth.views import login
 from djgeojson.views import GeoJSONLayerView
 from django.views.generic import TemplateView
+from dialectsDB import paradigms
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -11,6 +13,10 @@ urlpatterns = patterns('',
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),
+    #url('^auth/', include('django.contrib.auth.urls')),
+    url(r'login/', login, {'extra_context':
+                                    {'pageTitle': 'Login', 'paradigmDict': paradigmDict.items()}
+                                }),
     url(r'^search/(list)/', searchMultiType),
     url(r'^search/(map)/', searchMultiType),
     #url(r'^search/map2/', search_Map2),
@@ -29,7 +35,8 @@ urlpatterns = patterns('',
     url('^index.html$', aboutview),
     url(r'^$', aboutview),
     url(r'^about.html$', aboutview),
-    url(r'^mapcsv/', csvMap)
+    url(r'^mapcsv/', csvMap),
+
     #url(r'^autocomplete/', include('autocomplete_light.urls')) #required by autocomplete
 
 )

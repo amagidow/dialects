@@ -6,12 +6,20 @@ from django.views.generic import ListView
 from dialectsDB.utilityfuncs import *
 from dialectsDB.paradigms import *
 from itertools import groupby
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 import json
+
+
 
 ############ Input Forms should ALL be login required for the time being ###################
 
 
+##NOTE: REMOVE THE "USER" PART OF THE FORM
+
 #Basic free input form view and validation
+#Not sure if I should require specific permissions at this point - having a login sufficient?
+@login_required
 def inputForm(request,numSets=1): #default is one, but can be sent more
     numSets = int(numSets) #didn't know I have to cast this, but apparently I do, otherwise it throws an error
     datumForms = formset_factory(DatumIndividualInfo, extra=numSets)
@@ -22,6 +30,7 @@ def inputForm(request,numSets=1): #default is one, but can be sent more
         finalObjectList = []
         if dialectForm.is_valid():
             initialObject = dialectForm.save(commit=False)
+            initialObject.contributor = Contributor.objects.get(user=request.user)#This should work, test it
             print("DialectForm: Valid")
             #print(deliberatelybreakingit)
             if datumForms.is_valid():
@@ -49,6 +58,53 @@ def inputForm(request,numSets=1): #default is one, but can be sent more
         dialectForm = DatumBasicInfo()
         #datumForms = formset_factory(DatumIndividualInfo, extra=numSets)
         return render(request, 'inputForm.html',{'pageTitle': "Single Dialect Multi-Datum Input Form", 'paradigmDict': paradigmDict.items(), 'dialectForm' : dialectForm, 'dataFormset': datumForms})
+
+@login_required
+def complexTableInput(request,paradigmname,toggleAnnot="A"): #Input
+    combinedDict = []
+    retrievedParadigm = paradigmDict[paradigmname]
+    if request.method == 'POST':
+        dialectForm = DatumBasicInfoPgNo(request.POST)
+        querydata = request.POST.copy()
+        tags = ""
+        combinedDict = []
+        if toggleAnnot == "NA":
+            retrievedParadigm.annotation = False
+        sharedTags = querydata.get("sharedtags", "").split("_") #wish I could just pop it
+
+        #for each piece of linguistic data, create a list of dictionaries. Each dictionary should contain: "datum", "gloss", "annotation", "tags" (as list?), "relationships"
+        #Relationships: what should they point at? They should point at datum I guess, but only one of them
+        if dialectForm.is_valid():
+            initialObject = dialectForm.save(commit=False)
+            initialObject.contributor = Contributor.objects.get(user=request.user)
+            combinedDict = processInputForm(sharedTags, querydata)
+            datumsToObjs(initialObject,combinedDict)
+        return render(request, 'ComplexTableInput.jinja', {'pageTitle': retrievedParadigm.paradigmname,'paradigmDict': paradigmDict.items(),  'output': combinedDict, 'dialectForm': dialectForm, 'dataStruct': retrievedParadigm})
+    else:
+        dialectForm = DatumBasicInfoPgNo()
+    return render(request,'ComplexTableInput.jinja', {'pageTitle': retrievedParadigm.paradigmname,'paradigmDict': paradigmDict.items(), 'output': combinedDict, 'dialectForm': dialectForm, 'dataStruct': retrievedParadigm})
+
+
+
+
+############## View functions which are sensitive to permissions ###############
+def complexTableView(request):
+    retrievedParadigm = paradigmDict['independentpronouns'] #random default since something needs to be passed
+    if request.method == 'POST':
+        dialectForm = ParadigmSearchForm(request.POST, request.FILES)
+        if dialectForm.is_valid():
+            result = dialectForm.cleaned_data
+            #dialects = list(filter(None, result.get("dialectSearch").split(",")))
+            dialects = [x for x in result.get("dialectSearch").split(",") if x.strip()] #If there's data, put it into a list of dialects
+            print("DialectsCleaned: {}".format(dialects))
+            paradigmname = result.get("paradigm")
+            retrievedParadigm = paradigmDict[paradigmname]
+            return render(request, 'ComplexTableView.jinja', {'pageTitle': retrievedParadigm.paradigmname, 'paradigmDict': paradigmDict.items(),'dataStruct': retrievedParadigm, 'dialectForm': dialectForm, 'dialectList' : dialects})
+    else:
+        dialectForm = ParadigmSearchForm()
+    return render(request, 'ComplexTableView.jinja', {'pageTitle': retrievedParadigm.paradigmname, 'paradigmDict': paradigmDict.items(),'dataStruct': retrievedParadigm, 'dialectForm': dialectForm, 'dialectList' : []})
+
+
 
 
 
@@ -79,7 +135,7 @@ def searchMultiType(request, type="map"):
             #print(searchresults)
             for form in searchresults:
                 #iterate through forms
-                formTuple = searchLanguageDatumColor(form.cleaned_data)
+                formTuple = searchLanguageDatumColor(form.cleaned_data) #Permission happens down here too
                 wordSearchText = form.cleaned_data['wordSearch']
                 glossSearchText = form.cleaned_data['glossSearch']
                 annotSearchText = form.cleaned_data['annotationSearch']
@@ -100,9 +156,8 @@ def searchMultiType(request, type="map"):
                 print("Group:{})".format(group))
                 for member in group:
                     #print(member)
-
                     if first == True:
-                        dialectQS = Dialect.objects.filter(languagedatum__in=member[0])
+                        dialectQS = Dialect.objects.filter(languagedatum__in=member[0])#Permission function probably necessary here
                         finalqueryset = member[0]
                         #print("Finalquery set1: {}".format(str(finalqueryset).encode('ascii', errors='backslashreplace')))
                         first= False
@@ -143,60 +198,6 @@ def searchMultiType(request, type="map"):
                                                      'targetPage' : targetPage, 'initialSource': targetPage, 'csvlink': csvLink, 'results': results,
                                                      'searchquery': searchquery})
 
-#Uses session info loaded in via
-
-
-
-
-
-def complexTableInput(request,paradigmname,toggleAnnot="A"): #Input
-    combinedDict = []
-    retrievedParadigm = paradigmDict[paradigmname]
-    if request.method == 'POST':
-        dialectForm = DatumBasicInfoPgNo(request.POST)
-        querydata = request.POST.copy()
-        tags = ""
-        combinedDict = []
-        if toggleAnnot == "NA":
-            retrievedParadigm.annotation = False
-        sharedTags = querydata.get("sharedtags", "").split("_") #wish I could just pop it
-
-        #for each piece of linguistic data, create a list of dictionaries. Each dictionary should contain: "datum", "gloss", "annotation", "tags" (as list?), "relationships"
-        #Relationships: what should they point at? They should point at datum I guess, but only one of them
-        if dialectForm.is_valid():
-            initialObject = dialectForm.save(commit=False)
-            combinedDict = processInputForm(sharedTags, querydata)
-            datumsToObjs(initialObject,combinedDict)
-        return render(request, 'ComplexTableInput.jinja', {'pageTitle': retrievedParadigm.paradigmname,'paradigmDict': paradigmDict.items(),  'output': combinedDict, 'dialectForm': dialectForm, 'dataStruct': retrievedParadigm})
-    else:
-        dialectForm = DatumBasicInfoPgNo()
-    return render(request,'ComplexTableInput.jinja', {'pageTitle': retrievedParadigm.paradigmname,'paradigmDict': paradigmDict.items(), 'output': combinedDict, 'dialectForm': dialectForm, 'dataStruct': retrievedParadigm})
-
-
-
-
-############## View functions which are sensitive to permissions ###############
-def complexTableView(request):
-    retrievedParadigm = paradigmDict['independentpronouns'] #random default since something needs to be passed
-    if request.method == 'POST':
-        dialectForm = ParadigmSearchForm(request.POST, request.FILES)
-        if dialectForm.is_valid():
-            result = dialectForm.cleaned_data
-            #dialects = list(filter(None, result.get("dialectSearch").split(",")))
-            dialects = [x for x in result.get("dialectSearch").split(",") if x.strip()]
-            print("DialectsCleaned: {}".format(dialects))
-            paradigmname = result.get("paradigm")
-            retrievedParadigm = paradigmDict[paradigmname]
-            return render(request, 'ComplexTableView.jinja', {'pageTitle': retrievedParadigm.paradigmname, 'paradigmDict': paradigmDict.items(),'dataStruct': retrievedParadigm, 'dialectForm': dialectForm, 'dialectList' : dialects})
-    else:
-        dialectForm = ParadigmSearchForm()
-    return render(request, 'ComplexTableView.jinja', {'pageTitle': retrievedParadigm.paradigmname, 'paradigmDict': paradigmDict.items(),'dataStruct': retrievedParadigm, 'dialectForm': dialectForm, 'dialectList' : []})
-
-
-
-
-
-
 
 def crossSearchView(request):
     mainSearch = formset_factory(NonModelSearchForm, extra=1)
@@ -212,11 +213,11 @@ def crossSearchView(request):
             bodyRows = [] #Going to be a list of lists
             for msform in mainresults: #Everything from this section should be 'anded' to produce the final main query
                 if first:
-                    mainQS = searchLanguageDatum(msform.cleaned_data)
+                    mainQS = searchLanguageDatum(msform.cleaned_data)#Permission goes in here?
                     mainsearchtext = searchText(msform.cleaned_data) + "\n"
                     first = False
                 else:
-                    mainQS = mainQS & searchLanguageDatum(msform.cleaned_data)#Fix this, it won't work correctly, see above
+                    mainQS = mainQS & searchLanguageDatum(msform.cleaned_data)#Fix this, it won't work correctly, see searchMultiType
                     mainsearchtext + searchText(msform.cleaned_data) + "\n"
             headerRows.append("Main:" + mainsearchtext)
             dialectsList = Dialect.objects.filter(languagedatum__in=mainQS).distinct().order_by('dialectCode')

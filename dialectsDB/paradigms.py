@@ -56,7 +56,8 @@ class StructuredTable(object):
     def getDatumsFromTags(self,dialect, tags): #utilty function for in templates
         print("DialectCode is: {}".format(dialect))
         dialect = dialect.strip() #clear whitespace
-        myQuery = LanguageDatum.objects.all().filter(dialect__dialectCode=dialect)
+        #Add User argument with default "none", hit the permission function first, filter on that
+        myQuery = LanguageDatum.objects.all().filter(dialect__dialectCode=dialect) #Need to have some user filtering here
         print("Base languageDatum: {}".format(str(myQuery).encode('ascii', errors='backslashreplace')))
         tags = set(tags)
         tags = filter(None, tags) #remove blanks
