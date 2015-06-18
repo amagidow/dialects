@@ -30,14 +30,15 @@ def mylogout(request):
 def inputForm(request,numSets=1): #default is one, but can be sent more
     numSets = int(numSets) #didn't know I have to cast this, but apparently I do, otherwise it throws an error
     datumForms = formset_factory(DatumIndividualInfo, extra=numSets)
+    contributor = Contributor.objects.get(user=request.user)
     if request.method == 'POST':#validate
-        dialectForm = DatumBasicInfo(request.POST) #dialectForm holds the basic dialect information
+        dialectForm = DatumBasicInfo(request.POST, initial={'normalizationStyle': contributor.defaultEncoding , 'permissions': contributor.defaultPermission}) #dialectForm holds the basic dialect information
         datumForms = datumForms(request.POST, request.FILES)
         initialObject = LanguageDatum()
         finalObjectList = []
         if dialectForm.is_valid():
             initialObject = dialectForm.save(commit=False)
-            initialObject.contributor = Contributor.objects.get(user=request.user)#This should work, test it
+            initialObject.contributor = contributor
             print("DialectForm: Valid")
             #print(deliberatelybreakingit)
             if datumForms.is_valid():
@@ -62,7 +63,7 @@ def inputForm(request,numSets=1): #default is one, but can be sent more
        # pass
         return render(request, 'inputForm.html',{'pageTitle': "Single Dialect Multi-Datum Input Form", 'paradigmDict': paradigmDict.items(),  'dialectForm' : dialectForm, 'dataFormset': datumForms})
     else:
-        dialectForm = DatumBasicInfo()
+        dialectForm = DatumBasicInfo(initial={'normalizationStyle': contributor.defaultEncoding , 'permissions': contributor.defaultPermission})
         #datumForms = formset_factory(DatumIndividualInfo, extra=numSets)
         return render(request, 'inputForm.html',{'pageTitle': "Single Dialect Multi-Datum Input Form", 'paradigmDict': paradigmDict.items(), 'dialectForm' : dialectForm, 'dataFormset': datumForms})
 
@@ -70,8 +71,9 @@ def inputForm(request,numSets=1): #default is one, but can be sent more
 def complexTableInput(request,paradigmname,toggleAnnot="A"): #Input
     combinedDict = []
     retrievedParadigm = paradigmDict[paradigmname]
+    contributor = Contributor.objects.get(user=request.user)
     if request.method == 'POST':
-        dialectForm = DatumBasicInfoPgNo(request.POST)
+        dialectForm = DatumBasicInfoPgNo(request.POST, initial={'normalizationStyle': contributor.defaultEncoding , 'permissions': contributor.defaultPermission})
         querydata = request.POST.copy()
         tags = ""
         combinedDict = []
@@ -83,12 +85,12 @@ def complexTableInput(request,paradigmname,toggleAnnot="A"): #Input
         #Relationships: what should they point at? They should point at datum I guess, but only one of them
         if dialectForm.is_valid():
             initialObject = dialectForm.save(commit=False)
-            initialObject.contributor = Contributor.objects.get(user=request.user)
+            initialObject.contributor = contributor
             combinedDict = processInputForm(sharedTags, querydata)
             datumsToObjs(initialObject,combinedDict)
         return render(request, 'ComplexTableInput.jinja', {'pageTitle': retrievedParadigm.paradigmname,'paradigmDict': paradigmDict.items(),  'output': combinedDict, 'dialectForm': dialectForm, 'dataStruct': retrievedParadigm})
     else:
-        dialectForm = DatumBasicInfoPgNo()
+        dialectForm = DatumBasicInfoPgNo(initial={'normalizationStyle': contributor.defaultEncoding , 'permissions': contributor.defaultPermission})
     return render(request,'ComplexTableInput.jinja', {'pageTitle': retrievedParadigm.paradigmname,'paradigmDict': paradigmDict.items(), 'output': combinedDict, 'dialectForm': dialectForm, 'dataStruct': retrievedParadigm})
 
 
@@ -123,6 +125,7 @@ def searchMultiType(request, type="map"):
     targetpage = ""
     pagetitle = ""
     results = ''
+    contributor = Contributor.objects.get(user=request.user)
     if type == "map":
         targetPage = "/leafletmap/"
         pagetitle = "Map Search"
@@ -179,11 +182,12 @@ def searchMultiType(request, type="map"):
                 #This has to be after all the member functions are over, outside of that loop, otherwise the QS actions are pointless
                 #print("Final dialectQS: {}".format(str(dialectQS).encode('ascii', errors='backslashreplace')))
                 finalqueryset = finalqueryset.filter(dialect__in=dialectQS)
-
-                #print("Finalquery set final: {}".format(str(finalqueryset).encode('ascii', errors='backslashreplace')))
                 markers += generateMarkers((finalqueryset,groupcolor)) #Up to here works for both map and list
-                #Doing permissions manually here, this is not the best way to do things but works for now
 
+                #Doing permissions manually here, this is not the best way to do things but works for now
+                if type=="map":
+                    colorQS = finalqueryset.filter(contributor=contributor) | finalqueryset.exclude(contributor=contributor).exclude(permissions__contains="NoE") #This will also exclude things from the user - need to fix it
+                    csvMarkers += generateMarkers((colorQS.distinct(), groupcolor))
             #print("Markers: {}".format(markers))
             #print(finalqueryset)
             serialized = []
@@ -192,11 +196,12 @@ def searchMultiType(request, type="map"):
                 markers = cleanupMarkers(markers)
                 for myobject in markers:
                     serialized.append(geojson.dumps(myobject))
+                for myobject in csvMarkers:
                     csvserialized.append(myobject.csvserialized)
                 serialized = ",".join(serialized)
                 #print(serialized)
                 results = serialized
-                request.session['csvout'] = "\n".join(csvserialized) #This needs to be cleaned of PubNoE data
+                request.session['csvout'] = "\n".join(csvserialized) #This is manually cleaned of PubNoE data
                 request.session['csvheader'] = "Dialect,Color,Lat,Long" # "self.dialectname, self.color, self.geomLat, self.geomLong"
             elif type=="list":
                 arraylist = [x.dtarray for x in markers]
