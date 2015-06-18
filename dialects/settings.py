@@ -108,6 +108,7 @@ jinja2.Environment(trim_blocks=True)
 #'taggit': 'taggit.south_migrations',
 #}
 
+LOGIN_REDIRECT_URL = "/about.html"
 
 LANGUAGE_CODE = 'en-us'
 

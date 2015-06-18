@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from dialectsDB.views import *
 from django.contrib import admin
-from django.contrib.auth.views import login
+from django.contrib.auth.views import login, logout
 from djgeojson.views import GeoJSONLayerView
 from django.views.generic import TemplateView
 from dialectsDB import paradigms
@@ -15,8 +15,8 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     #url('^auth/', include('django.contrib.auth.urls')),
     url(r'login/', login, {'extra_context':
-                                    {'pageTitle': 'Login', 'paradigmDict': paradigmDict.items()}
-                                }),
+                                    {'pageTitle': 'Login', 'paradigmDict': paradigmDict.items()}}),
+    url(r'logout/', mylogout),
     url(r'^search/(list)/', searchMultiType),
     url(r'^search/(map)/', searchMultiType),
     #url(r'^search/map2/', search_Map2),

@@ -1,5 +1,6 @@
 __author__ = 'Alex'
 from dialectsDB.models import LanguageDatum
+from dialectsDB import utilityfuncs
 class TableAxis(object):
     def __init__(self, headername, headertags, uniqueID = False,subheaders=[], relatedTo=False, relatedHow = ""):
         self.headername = headername #This is identical to "GLOSS" in the processing function - must be unique - so subheaders must inherit from headers
@@ -53,20 +54,21 @@ class StructuredTable(object):
         else:
             return "NoGloss"
 
-    def getDatumsFromTags(self,dialect, tags): #utilty function for in templates
-        print("DialectCode is: {}".format(dialect))
+    def getDatumsFromTags(self,dialect, tags, user=None): #utilty function for in templates
+        #print("DialectCode is: {}".format(dialect))
         dialect = dialect.strip() #clear whitespace
         #Add User argument with default "none", hit the permission function first, filter on that
-        myQuery = LanguageDatum.objects.all().filter(dialect__dialectCode=dialect) #Need to have some user filtering here
-        print("Base languageDatum: {}".format(str(myQuery).encode('ascii', errors='backslashreplace')))
+        myQuery = utilityfuncs.permissionwrapper(user)
+        myQuery = myQuery.filter(dialect__dialectCode=dialect) #Need to have some user filtering here
+        #print("Base languageDatum: {}".format(str(myQuery).encode('ascii', errors='backslashreplace')))
         tags = set(tags)
         tags = filter(None, tags) #remove blanks
-        print("Tags to Retrieve are: {}".format(tags))
+        #print("Tags to Retrieve are: {}".format(tags))
         #print("getDatumFromTags:{}".format(tags))
         for tag in tags:
             tag = tag.strip()
             myQuery = myQuery.filter(entryTags__tagText=tag)
-            print("QueryReturned: {}".format(str(myQuery).encode('ascii', errors='backslashreplace')))
+            #print("QueryReturned: {}".format(str(myQuery).encode('ascii', errors='backslashreplace')))
         return myQuery
 
 

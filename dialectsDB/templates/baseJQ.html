@@ -86,6 +86,13 @@
 {% block body %}
 {% endblock %}
 
+<div class = "loginfloat">
+    {% if request.user.is_authenticated %}
+        Logged in as: {{ request.user.username }}. <a href = "/logout/">Logout</a>
+    {% else %}
+        <a href = "/login/">Login?</a>
+    {% endif %}
+</div>
 
 </body>
 </html>

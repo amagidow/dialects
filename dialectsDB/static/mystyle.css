@@ -32,6 +32,20 @@
     right:0;*/
 }
 
+.loginfloat {
+	border: 3px solid #628C75;
+	background: #628C75 url("images/ui-bg_loop_45_3f634f_21x21.png") 50% 50% repeat;
+	color: #ffffff;
+	font-weight: bold;
+    font-size: .6em;
+    font-family: Palatino, Georgia, "Times New Roman", Times, serif;
+    text-align: center;
+     position: fixed;
+  bottom: 0;
+    right:0;
+}
+
+
 .titlebar .arabicTitle {
     font-family: "Sakkal Majalla", "Scheherazade", "Arabic Typesetting", "Lateef";
     	font-weight: bold;

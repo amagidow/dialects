@@ -166,6 +166,8 @@ class MarkerInfo():#Class for storing information for markers
     def appendpopup(self, newstring):
         self.popupstring += newstring
         return self.popupstring
+    def __str__(self):
+        return self.dialectname
 
     @property
     def sourcedoc(self):
@@ -231,12 +233,13 @@ def searchText(request):
     tagSearchText = None or request['tagSearch']
     return "Aw: {} G: {} An: {} T: {}".format(wordSearchText,glossSearchText,annotSearchText,tagSearchText)
 
-def searchLanguageDatum(request):
-    queryToReturn = LanguageDatum.objects.exclude(permissions="Private") #Have permission wrapper function here! 
-    wordSearchText = request['wordSearch']
-    glossSearchText = request['glossSearch']
-    annotSearchText = request['annotationSearch']
-    tagSearchText = None or request['tagSearch']
+def searchLanguageDatum(formdata, user):
+    #print("request obj:{}".format(formdata))
+    queryToReturn = permissionwrapper(user) #Have permission wrapper function here!
+    wordSearchText = formdata['wordSearch']
+    glossSearchText = formdata['glossSearch']
+    annotSearchText = formdata['annotationSearch']
+    tagSearchText = None or formdata['tagSearch']
     #no idea how to handle tags just yet
     if wordSearchText:
         queryToReturn = queryToReturn.filter(normalizedEntry__regex=wordSearchText)
@@ -252,9 +255,9 @@ def searchLanguageDatum(request):
             queryToReturn = queryToReturn.distinct().filter(entryTags__tagText__contains=queryItem)#can't be regex b/c of periods in tags
     return queryToReturn
 
-def searchLanguageDatumColor(request): #Utility function to process a request based on the search bar
-    color = request['colorinput']
-    queryToReturn = searchLanguageDatum(request)
+def searchLanguageDatumColor(formdata, user): #Utility function to process a request based on the search bar
+    color = formdata['colorinput']
+    queryToReturn = searchLanguageDatum(formdata, user)
     return (queryToReturn, color) #returns a tuple with the query and the expected color
 
 
@@ -295,10 +298,10 @@ def cleanupMarkers(markers):
                     bavg += float(Color(item).get_blue())
                 mainMember.color = Color(rgb=(ravg/len(collectedcolors),gavg/len(collectedcolors),bavg/len(collectedcolors))).get_hex_l()
                 #Do something to blend colors
-            newobjectlist.append(mainMember) #once we have its info, we cut it out
-    #print(newobjectlist)
+        print(mainMember)
+        newobjectlist.append(mainMember) #once we have its info, we cut it out - IS THIS REALLY ELIMINATING DUPLICATES?
+    print(newobjectlist)
     return newobjectlist
-        #Need to append all the data from duplicates to the properties of the first one
 
 def removeJustIntag():
     justintag = EntryTag.objects.get(tagText="justin")
@@ -310,14 +313,20 @@ def removeJustIntag():
 #This function wraps a called to LanguageDatum.objects.all() in such a way that it correctly handles permissions
 #Only handles whether something can be displayed, not for export
 #If contributor is not defined, it only export
-def permissionwrapperdisplay(contrib=None):
-    if contrib:
-        #Second clause should get even stuff that is private
-        queryreturn = LanguageDatum.objects.filter(permissions__contains="pub") | LanguageDatum.objects.filter(contributor=contrib)
-        #This will have duplicates, handle later
-        #queryreturn = queryreturn.distinct()
+def permissionwrapper(user=None, export = False):
+    if user:
+        if user.is_active and user.is_authenticated():
+            contrib = Contributor.objects.get(user=user)
+            #Second clause should get even stuff that is private
+            queryreturn = LanguageDatum.objects.filter(permissions__contains="Pub") | LanguageDatum.objects.filter(contributor=contrib)
+            if export:
+                queryreturn = queryreturn.exclude(permissions__contains="NoE") # if exporting, exclude those not available for export
+                #This will have duplicates, handle later
+            #queryreturn = queryreturn.distinct()
+        else:
+            queryreturn = LanguageDatum.objects.filter(permissions__contains="Pub")
     else:
-        queryreturn = LanguageDatum.objects.filter(permissions__contains="pub")
+        queryreturn = LanguageDatum.objects.filter(permissions__contains="Pub")
     return queryreturn
 
 

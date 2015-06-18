@@ -25,7 +25,7 @@
 {% macro cellaction(cellglosstags, cellalltags, relatetags = '') -%}
 
     {% set allTags = cellalltags+cellglosstags+dataStruct.sharedtags %}
-    {% set myQuery = dataStruct.getDatumsFromTags(currentDialect,allTags) %} {# Need to add permission function here #}
+    {% set myQuery = dataStruct.getDatumsFromTags(currentDialect,allTags, request.user) %} {# Need to add permission function here #}
     {% set entryString = [] %}
     {% set annotString = [] %}
     {% for entry in myQuery %}

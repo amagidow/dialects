@@ -6,16 +6,23 @@ from django.views.generic import ListView
 from dialectsDB.utilityfuncs import *
 from dialectsDB.paradigms import *
 from itertools import groupby
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseRedirect
 import json
+
+
+
+############ Non-input or output form functions ##############
+def mylogout(request):
+    logout(request) #Sufficient to just log the person out
+    return HttpResponseRedirect("/login/")
 
 
 
 ############ Input Forms should ALL be login required for the time being ###################
 
 
-##NOTE: REMOVE THE "USER" PART OF THE FORM
 
 #Basic free input form view and validation
 #Not sure if I should require specific permissions at this point - having a login sufficient?
@@ -132,10 +139,13 @@ def searchMultiType(request, type="map"):
         if searchresults.is_valid():
             formResults = []
             markers = []
+            csvMarkers = []
             #print(searchresults)
             for form in searchresults:
-                #iterate through forms
-                formTuple = searchLanguageDatumColor(form.cleaned_data) #Permission happens down here too
+                #These lines do the actual processing
+                formTuple = searchLanguageDatumColor(form.cleaned_data, request.user) #Passing it the cleaned data, NOT the request
+                formResults.append(formTuple)
+                #These lines just create a small blurb under the search form
                 wordSearchText = form.cleaned_data['wordSearch']
                 glossSearchText = form.cleaned_data['glossSearch']
                 annotSearchText = form.cleaned_data['annotationSearch']
@@ -144,9 +154,10 @@ def searchMultiType(request, type="map"):
                 sq += "Color: {} Word: {} Gloss: {} Annotation:{} Tags: {}\n".format(
                     color, wordSearchText, glossSearchText, annotSearchText, tagSearchText)
                 #print("FormTuple:{}".format(formTuple))
-                formResults.append(formTuple)
             searchquery = sq
+            #Sort the results by color before grouping
             formResults.sort(key=lambda x: x[1])
+            #Iterate through color groups
             for key, group in groupby(formResults, lambda x: x[1]):
                 #print("Key: {}, Group:{}".format(key,group))
                 groupcolor = key #I think this is right
@@ -157,7 +168,7 @@ def searchMultiType(request, type="map"):
                 for member in group:
                     #print(member)
                     if first == True:
-                        dialectQS = Dialect.objects.filter(languagedatum__in=member[0])#Permission function probably necessary here
+                        dialectQS = Dialect.objects.filter(languagedatum__in=member[0])
                         finalqueryset = member[0]
                         #print("Finalquery set1: {}".format(str(finalqueryset).encode('ascii', errors='backslashreplace')))
                         first= False
@@ -168,8 +179,11 @@ def searchMultiType(request, type="map"):
                 #This has to be after all the member functions are over, outside of that loop, otherwise the QS actions are pointless
                 #print("Final dialectQS: {}".format(str(dialectQS).encode('ascii', errors='backslashreplace')))
                 finalqueryset = finalqueryset.filter(dialect__in=dialectQS)
+
                 #print("Finalquery set final: {}".format(str(finalqueryset).encode('ascii', errors='backslashreplace')))
                 markers += generateMarkers((finalqueryset,groupcolor)) #Up to here works for both map and list
+                #Doing permissions manually here, this is not the best way to do things but works for now
+
             #print("Markers: {}".format(markers))
             #print(finalqueryset)
             serialized = []
@@ -213,11 +227,11 @@ def crossSearchView(request):
             bodyRows = [] #Going to be a list of lists
             for msform in mainresults: #Everything from this section should be 'anded' to produce the final main query
                 if first:
-                    mainQS = searchLanguageDatum(msform.cleaned_data)#Permission goes in here?
+                    mainQS = searchLanguageDatum(msform.cleaned_data, request.user)
                     mainsearchtext = searchText(msform.cleaned_data) + "\n"
                     first = False
                 else:
-                    mainQS = mainQS & searchLanguageDatum(msform.cleaned_data)#Fix this, it won't work correctly, see searchMultiType
+                    mainQS = mainQS & searchLanguageDatum(msform.cleaned_data, request.user)#Fix this, it won't work correctly, see searchMultiType
                     mainsearchtext + searchText(msform.cleaned_data) + "\n"
             headerRows.append("Main:" + mainsearchtext)
             dialectsList = Dialect.objects.filter(languagedatum__in=mainQS).distinct().order_by('dialectCode')
@@ -225,7 +239,7 @@ def crossSearchView(request):
             columnQSs = [mainQS,]
             for csform in crossresults: #every one of these things is its own search
                 headerRows.append(searchText(csform.cleaned_data))
-                columnQSs.append(searchLanguageDatum(csform.cleaned_data)) #Each of these queries should include all of the results of these searches
+                columnQSs.append(searchLanguageDatum(csform.cleaned_data, request.user)) #Each of these queries should include all of the results of these searches
             for dl in dialectsList:
                 thisRow = [dl.dialectCode, ]
                 for cqs in columnQSs:
