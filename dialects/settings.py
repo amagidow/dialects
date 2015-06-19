@@ -43,8 +43,8 @@ INSTALLED_APPS = (
     'django.contrib.gis',
      'dialectsDB',
     'leaflet',
-    'djgeojson',
-    'django_jinja'
+    'djgeojson'
+ #   'django_jinja'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -76,12 +76,43 @@ DATABASES = {
     }
 }
 
-#TEMPLATES = [
-#    {
-#        'BACKEND': 'django.template.backends.jinja2.Jinja2',
-#        'DIRS': [],        'APP_DIRS': True,
-#    },
-#]
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            'templates/',
+            'dialectsDB/templates/'
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                # Insert your TEMPLATE_CONTEXT_PROCESSORS here or use this
+                # list if you haven't customized them:
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.csrf'
+
+            ],
+    },
+    },
+    {
+        'BACKEND': 'django.template.backends.jinja2.Jinja2',
+        'DIRS': [
+            'templates/',
+            'dialectsDB/templates/',
+            'dialectsDB/templates/jinja/',
+        ],
+        'OPTIONS':
+            {
+                'environment': 'dialectsDB.jinja2.environment'
+            },
+    },
+]
 TEMPLATE_LOADERS = (
     'django_jinja.loaders.FileSystemLoader',
     'django_jinja.loaders.AppLoader',
@@ -94,12 +125,13 @@ TEMPLATE_CONTEXT_PROCESSORS = ("django.contrib.auth.context_processors.auth",
 "django.core.context_processors.static",
 "django.core.context_processors.tz",
 "django.contrib.messages.context_processors.messages",
-"django.core.context_processors.request"
+"django.core.context_processors.request",
+'django.core.context_processors.csrf'
                                )
 
 
-DEFAULT_JINJA2_TEMPLATE_INTERCEPT_RE = r'.*jinja$'
-jinja2.Environment(trim_blocks=True)
+#DEFAULT_JINJA2_TEMPLATE_INTERCEPT_RE = r'.*jinja$'
+#jinja2.Environment(trim_blocks=True)
 # Internationalization
 # https://docs.djangoproject.com/en/1.6/topics/i18n/
 

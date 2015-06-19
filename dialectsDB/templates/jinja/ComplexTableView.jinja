@@ -10,7 +10,7 @@
 </div>
 
 <form method="post" name = "dialectForm" id="dialectForm">
-{% csrf_token %}
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
     <table class="ui-widget" style="font-size: 1em;">
 {{ dialectForm|safe }}
         </table>
