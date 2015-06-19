@@ -167,7 +167,7 @@ def searchMultiType(request, type="map"):
                 finalqueryset = None
                 dialectQS = None
                 first = True
-                print("Group:{})".format(group))
+                #print("Group:{})".format(group))
                 for member in group:
                     #print(member)
                     if first == True:
