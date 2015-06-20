@@ -99,14 +99,14 @@ class LanguageDatum(models.Model):
         serialData = self.myserializer()
         headerReturn = "|".join("{}".format(k) for (k,v) in serialData.items())
         return headerReturn
-
-
     class Meta:
         app_label = 'dialectsDB' #these have to be here
 
 class Contributor(models.Model):
     user = models.OneToOneField(User)
     blurb = models.CharField(max_length=500, blank=True)
+    affiliation = models.CharField("academic affiliation",max_length=200, blank=True)
+    webaddress = models.URLField("academic website", blank=True)
     physicalAddress = models.CharField("physical academic address",max_length=500, blank=True)
     defaultPermission = models.CharField("default permission setting for data input",max_length=8, choices=LanguageDatum.PERMISSION_TYPES)
     defaultEncoding = models.CharField("default transliteration style", max_length = 5, choices=NORM_STYLES)
