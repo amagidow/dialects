@@ -50,11 +50,10 @@ def inputForm(request,numSets=1): #default is one, but can be sent more
                     finalObject.sourceDoc = initialObject.sourceDoc
                     finalObject.contributor = initialObject.contributor
                     finalObject.permissions = initialObject.permissions
-                    tags = form.cleaned_data['itemTags']
-                    print(tags)
-                    #finalObject =  mergeObjectProperties(initialObject,finalObject) #I think this is where it is failing
+                    tags = form.cleaned_data['entryTags'] #this gives a list of tags
+                    #print(tags)
                     finalObject.save()
-                    addTagstoLanguageDatum(finalObject,tags)
+                    finalObject.entryTags = tags #simple as making it equal the list, good to know
                     form.save_m2m() #THE FORM SAVES THE M2M relationship!
                     finalObjectList.append(finalObject)
             return render(request, 'tableView.html', {'object_list' : finalObjectList})

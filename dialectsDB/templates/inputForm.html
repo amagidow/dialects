@@ -1,6 +1,19 @@
 {% extends "baseJQ.html" %}
 {% block head %}
 {% include "sourceFSAC.html" %}
+
+
+<link rel="stylesheet" type="text/css" href="/static/admin/css/forms.css" />
+
+<script type="text/javascript" src="/admin/jsi18n/"></script>
+<script type="text/javascript" src="/static/admin/js/core.js"></script>
+<script type="text/javascript" src="/static/admin/js/admin/RelatedObjectLookups.js"></script>
+<script type="text/javascript" src="/static/admin/js/jquery.js"></script>
+<script type="text/javascript" src="/static/admin/js/jquery.init.js"></script>
+<script type="text/javascript" src="/static/admin/js/actions.js"></script>
+<script type="text/javascript" src="/static/admin/js/SelectBox.js"></script>
+<script type="text/javascript" src="/static/admin/js/SelectFilter2.js"></script>
+<script type="text/javascript" src="/static/admin/js/related-widget-wrapper.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -22,13 +35,19 @@
         {% for f_form in dataFormset %}
         <table id="inputform" border-bottom='1px dashed brown' class="ui-widget" style="font-size: 1em;">
             {{ f_form}}
-        <br>
 
         </table>
         {% endfor %}
 
 
 <script type="text/javascript">
+    function enableHorizFilter(row){
+        filterbox = $(".selectfilter",row); //Row contains the whole row, select only our input box. This could break if there are multiple widgets like this, I think.
+        filterboxID = filterbox.attr("id");
+        //Copied from the source of the page, might break things if I change the defaults, hardcoded
+        SelectFilter.init(filterboxID,"Tags",0, "{{ STATIC_URL }}admin/");
+    }
+
         $('#inputform').formset( //this adds the formset controls
             {
               addText: "+",
@@ -36,7 +55,10 @@
                 addCssClass: "addremovebutton",
                 deleteCssClass: "addremovebutton",
                 added: function(row){
+                  enableHorizFilter(row);
                    enableAutoComplete(row);
+
+                   // function(e) {SelectFilter.init("id_form-0-entryTags", "Tags", 0, "/static/admin/");
                 }
             });
 </script>

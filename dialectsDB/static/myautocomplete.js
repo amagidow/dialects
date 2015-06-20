@@ -11,7 +11,7 @@
         $(element).autocomplete({
             source: $(element).attr('acsource').split(",")
                 });
-                console.log($(element).attr('acsource').split(","));
+                //console.log($(element).attr('acsource').split(","));
     }
     function multiAutocomplete(element){
         src = $(element).attr('acsource').split(","); //taken from the attributes, added by the widget
@@ -49,6 +49,7 @@
 
     function enableAutoComplete(row)
     {
+        //console.log(row)
         singleAutocomplete($(".acwidget",row)); //based on calss, adds single autocompletes
         multiAutocomplete($(".acwidgetmulti",row));//based on class, adds multiautocompletes
     }

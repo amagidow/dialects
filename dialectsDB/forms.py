@@ -5,7 +5,7 @@ from django.forms import ModelForm,TextInput, Textarea,ValidationError
 from dialectsDB.models import LanguageDatum, EntryTag, Dialect
 from dialectsDB import mywidgets, paradigms
 from django.contrib.auth.models import User
-
+from django.contrib.admin.widgets import FilteredSelectMultiple
 
 ######################FIELDS########################
 class TagField(forms.Field):
@@ -66,19 +66,33 @@ class DatumIndividualInfoNoTags(ModelForm):
         }
 
 class DatumIndividualInfo(ModelForm):
-    itemTags = TagField(EntryTag.objects.all(),'tagText', label="Item Tags")
+    #itemTags = TagField(EntryTag.objects.all(),'tagText', label="Item Tags")
+    entryTags = forms.ModelMultipleChoiceField(queryset=EntryTag.objects.all(),
+                                          label=('Select tags'),
+                                          required=False,
+                                          widget=FilteredSelectMultiple(verbose_name=('Tags'), is_stacked=False))
     class Meta:
         model = LanguageDatum
-        fields = ('normalizedEntry', 'originalOrthography','gloss', 'annotation', 'sourceLocation')
+        fields = ('normalizedEntry', 'originalOrthography','gloss', 'annotation', 'sourceLocation', 'entryTags')
         widgets = {
             'normalizedEntry': TextInput(),
             'gloss' : mywidgets.TagAutoWidget(LanguageDatum.objects.all(),"gloss", multi=False),
             'originalOrthography': TextInput(),
             'annotation': Textarea(attrs={'cols': 60, 'rows': 1}),
-            'sourceLocation': TextInput()#,
+            'sourceLocation': TextInput()
+            #,'entryTags' : FilteredSelectMultiple(verbose_name=('Tags'), is_stacked=False)
+
             #'entryTags': mywidgets.TagAutoWidget(EntryTag.objects.all(), "tagText")
             #'entryTags' : CheckboxSelectMultiple()
         }
+
+    class Media:
+        css = {
+            'all':['admin/css/widgets.css'],
+        }
+        # Adding this javascript is crucial
+        #js = ['/admin/js/jquery.init.js','/admin/jsi18n/', 'admin/js/ajax_filtered_fields.js']
+
 
 class SearchForm(ModelForm):
     wordSearch = forms.CharField(required=False, label='Regex Search of Words')
