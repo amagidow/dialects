@@ -32,19 +32,24 @@ def inputForm(request,numSets=1): #default is one, but can be sent more
     datumForms = formset_factory(DatumIndividualInfo, extra=numSets)
     contributor = Contributor.objects.get(user=request.user)
     if request.method == 'POST':#validate
-        dialectForm = DatumBasicInfo(request.POST, initial={'normalizationStyle': contributor.defaultEncoding , 'permissions': contributor.defaultPermission}) #dialectForm holds the basic dialect information
+        #dialectForm holds the basic dialect information
+        dialectForm = DatumBasicInfo(request.POST, initial={'normalizationStyle': contributor.defaultEncoding , 'permissions': contributor.defaultPermission,
+                                                            'glosslang' : contributor.defaultLanguage}) #have not tested that auto-set glosslang works
         datumForms = datumForms(request.POST, request.FILES)
         initialObject = LanguageDatum()
         finalObjectList = []
         if dialectForm.is_valid():
             initialObject = dialectForm.save(commit=False)
             initialObject.contributor = contributor
+            inputlang = dialectForm.cleaned_data["glosslang"]
             print("DialectForm: Valid")
             #print(deliberatelybreakingit)
             if datumForms.is_valid():
                 print("DatumForm:Valid")
                 for form in datumForms:
                     finalObject = form.save(commit=False)
+                    glossdict = {inputlang : finalObject.gloss}
+                    finalObject.multigloss = glossdict
                     finalObject.normalizationStyle = initialObject.normalizationStyle
                     finalObject.dialect = initialObject.dialect
                     finalObject.sourceDoc = initialObject.sourceDoc
@@ -85,6 +90,7 @@ def complexTableInput(request,paradigmname,toggleAnnot="A"): #Input
         if dialectForm.is_valid():
             initialObject = dialectForm.save(commit=False)
             initialObject.contributor = contributor
+            inputlanguage = retrievedParadigm.glosslang
             combinedDict = processInputForm(sharedTags, querydata)
             datumsToObjs(initialObject,combinedDict)
         return render(request, 'ComplexTableInput.jinja', {'pageTitle': retrievedParadigm.paradigmname,'paradigmDict': paradigmDict.items(),  'output': combinedDict, 'dialectForm': dialectForm, 'dataStruct': retrievedParadigm})
@@ -96,6 +102,8 @@ def complexTableInput(request,paradigmname,toggleAnnot="A"): #Input
 
 
 ############## View functions which are sensitive to permissions ###############
+
+#Have not altered this to work with multilingual glosses, probably unnecessary
 def complexTableView(request):
     retrievedParadigm = paradigmDict['independentpronouns'] #random default since something needs to be passed
     if request.method == 'POST':

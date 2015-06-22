@@ -49,7 +49,7 @@ def parse_string(st): #from Yonatan, test this out
             variants = [v + c for v in variants]
     return variants
 
-def datumsToObjs(genericInfo, datumsList): #generic info is a LanguageDatume object, datumsDict is my own dictionary
+def datumsToObjs(genericInfo, datumsList, inputlang="en"): #generic info is a LanguageDatume object, datumsDict is my own dictionary
     for item in datumsList:
         newObject = LanguageDatum()
         #These are all the basic pieces of information derived from the model form
@@ -63,7 +63,9 @@ def datumsToObjs(genericInfo, datumsList): #generic info is a LanguageDatume obj
        # item = datumsList[item] #this should just give me the entire subdict
         newObject.normalizedEntry = item['datum'] #each item is itself a dictionary
         newObject.annotation = item['annotation']
-        newObject.gloss = item['gloss']
+        newObject.gloss = item['gloss'] #Still assigning Gloss since it's require
+        glossdict = {inputlang : item['gloss']}  #Assigns a dictionary for the glossidct
+        newObject.multigloss = glossdict #For some reason, this did not work with multigloss[inputlang] = item['gloss']
         newObject.save()
         #probably need to save here for it to work in the tags section below
         #also, need to have relationships
@@ -244,7 +246,7 @@ def searchLanguageDatum(formdata, user):
     if wordSearchText:
         queryToReturn = queryToReturn.filter(normalizedEntry__regex=wordSearchText)
     if glossSearchText:
-        queryToReturn = queryToReturn.filter(gloss__contains=glossSearchText) #NO LONGER REGEX SEARCH!
+        queryToReturn = queryToReturn.filter(gloss__contains=glossSearchText) #NO LONGER REGEX SEARCH! #NEEDS TO BE FIXED FOR MULTIGLOSS
     if annotSearchText:
         queryToReturn = queryToReturn.filter(annotation__regex=annotSearchText)
     if tagSearchText:
@@ -263,8 +265,8 @@ def searchLanguageDatumColor(formdata, user): #Utility function to process a req
 
 def generateMarkers(queryset):#Takes a tuple of (queryset,color) of language datums and returns a list of MakerInfo objects
     objectlist = []
-    for item in queryset[0]:
-        newObject = MarkerInfo(location=item.dialect.centerLoc,entry=item.normalizedEntry,entrygloss=item.gloss,dialectname=item.dialect.dialectCode,sourcedoc=item.sourceDoc,sourceloc=item.sourceLocation,color=queryset[1], contributor=str(item.contributor), annotation=item.annotation, tags=item.entryTags.all())
+    for item in queryset[0]: #changed 'item.gloss' to 'item.glossesString() which should be enough for all markers to work
+        newObject = MarkerInfo(location=item.dialect.centerLoc,entry=item.normalizedEntry,entrygloss=item.glossesString(),dialectname=item.dialect.dialectCode,sourcedoc=item.sourceDoc,sourceloc=item.sourceLocation,color=queryset[1], contributor=str(item.contributor), annotation=item.annotation, tags=item.entryTags.all())
         #print(newObject)
         objectlist.append(newObject)
     return objectlist

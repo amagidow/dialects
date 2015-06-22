@@ -26,7 +26,7 @@ class TableAxis(object):
 
 
 class StructuredTable(object):
-    def __init__(self, paradigmname, sharedtags, columns, rows, glosses, annotation =True, subcolumns=True,subrows=True):
+    def __init__(self, paradigmname, sharedtags, columns, rows, glosses, glosslang="en", annotation =True, subcolumns=True,subrows=True):
         self.paradigmname = paradigmname
         #self.paradigmnid = paradigmid #TIMPORTNANT: his should be identical to the variable name!!!
         self.sharedtags = sharedtags
@@ -44,6 +44,7 @@ class StructuredTable(object):
             newKey = "_".join(newKey)
            # print("New key:{}".format(newKey))
             self.glosses.update({newKey : value})
+        self.glosslang = glosslang
 
     def getGloss(self,tags):
         tags.sort()
@@ -72,7 +73,7 @@ class StructuredTable(object):
         return myQuery
 
 
-pronounsuffixes = StructuredTable(paradigmname="Pronoun Suffixes", sharedtags= ['closed-class', 'pronoun.suffix'],
+pronounsuffixes = StructuredTable(paradigmname="Pronoun Suffixes", glosslang="en", sharedtags= ['closed-class', 'pronoun.suffix'],
                 columns= [
                    TableAxis("Singular","singular",subheaders=[
                        TableAxis("C__","cond.C-"), #For relationships,if we restrict to subheaders, we only need to know the appropriate subheader to find and we can figure out tags from there
@@ -109,7 +110,7 @@ pronounsuffixes = StructuredTable(paradigmname="Pronoun Suffixes", sharedtags= [
                    "plural_3rd-person_feminine" : "Their (f.)",
                         }
                 )
-independentpronouns = StructuredTable(paradigmname="Independent Pronouns", sharedtags= ['closed-class', 'pronoun.independent'],
+independentpronouns = StructuredTable(paradigmname="Independent Pronouns",  glosslang="en", sharedtags= ['closed-class', 'pronoun.independent'],
                columns= [
                     TableAxis("Singular","singular"),
                     TableAxis("Plural", "plural")
@@ -138,7 +139,7 @@ independentpronouns = StructuredTable(paradigmname="Independent Pronouns", share
                    "plural_3rd-person_feminine" : "They (f.)",
                })
 
-interrogatives = StructuredTable(paradigmname="Interrogatives", sharedtags=['closed-class'],
+interrogatives = StructuredTable(paradigmname="Interrogatives", glosslang="en", sharedtags=['closed-class'],
                 columns=[
                     TableAxis("General", ""),
                     TableAxis("Masculine", "masculine"),

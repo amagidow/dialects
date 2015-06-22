@@ -6,15 +6,19 @@ from django.utils.safestring import mark_safe
 from django.utils.html import format_html
 
 class TagAutoWidget(widgets.Textarea):
-    def __init__(self, queryset,field, multi=True, attrs=None):
+    #Takes either a queryset+field name, or if no field name, any iterable
+    def __init__(self, queryset,field=None, multi=True, attrs=None):
         super(TagAutoWidget,self).__init__(attrs)
-        self.queryset = queryset
+        self.queryset = queryset #queryset can really be an iterable, but
         self.queryfield = field
         self.itemlist = set()
         self.multi = multi
 
         for item in queryset:
-            self.itemlist.add(getattr(item,field))
+            if field:
+                self.itemlist.add(getattr(item,field))
+            else:
+                self.itemlist.add(item)
         self.itemlist = sorted(self.itemlist)
         #self.itemlist = set(self.itemlist) #Removes duplicates - just did a set from the start, more efficient
         self.itemlist = ",".join(self.itemlist)

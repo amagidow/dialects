@@ -27,7 +27,7 @@ class LanguageDatum(models.Model):
     normalizationStyle = models.CharField(max_length = 5, choices=NORM_STYLES)
     originalOrthography = models.TextField("arabic language entry in the original orthography in the source", blank=True)
     gloss = models.TextField("brief translation of entry")
-    multigloss = HStoreField(null=True)
+    multigloss = HStoreField("multi-lingual gloss")
     annotation = models.TextField("additional information on the entry", blank=True)
     lingRelationship = models.ManyToManyField('self', through='LingRelationship', blank=True, symmetrical=False, related_name='relationships')
     entryTags = models.ManyToManyField('EntryTag',blank=True, null=True)
@@ -44,7 +44,7 @@ class LanguageDatum(models.Model):
     permissions = models.CharField(max_length=8, choices=PERMISSION_TYPES)
     def __str__(self):
         displayDialectCode = str(self.dialect.dialectCode)
-        return self.normalizedEntry + ", " + self.gloss + ", " + displayDialectCode + ", " + self.annotation
+        return ", ".join([self.normalizedEntry, self.glossesString(), displayDialectCode, self.annotation])
 
     def myserializer(self):  #for the moment, just using this for important stuff, not every single column
         dialectName = str(self.dialect.dialectCode)
@@ -99,11 +99,24 @@ class LanguageDatum(models.Model):
         headerReturn = "|".join("{}".format(k) for (k,v) in serialData.items())
         return headerReturn
 
+    #wraps Multigloss so that you can easily get a string with the glosses, sorted in order by language but only
+    #returns the glosses themselves, not the language tag, e.g. "wo?, where?, ou?"
     def glossesString(self):
-        pass #This function should give a comma joined list of all of the glosses, preferably in alphabetical order by language
+        #first sort order by key so that glosses always show in the same order
+        glossitems = collections.OrderedDict(sorted(self.multigloss.items(), key = lambda t : t[0])) #copied from python docs
+        #pull out only the values
+        glosslist = [y for x,y in glossitems.items()]
+        return ", ".join(glosslist)
 
-    def glossesSearch(self):
-        pass #this function should wrap a search - I think that's going to be too complicated, just implement it throughout
+    #retrieves a list of all glosses
+    @staticmethod
+    def glossesList():
+        allLanguageDatums = LanguageDatum.objects.all() #note no permissions here
+        glosslist = []
+        for item in allLanguageDatums:
+            for key, value in item.multigloss.items():
+                glosslist.append(value)
+        return glosslist
 
     class Meta:
         app_label = 'dialectsDB' #these have to be here

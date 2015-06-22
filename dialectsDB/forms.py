@@ -2,7 +2,7 @@ __author__ = 'Magidow'
 # coding=UTF-8
 from django import forms
 from django.forms import ModelForm,TextInput, Textarea,ValidationError
-from dialectsDB.models import LanguageDatum, EntryTag, Dialect
+from dialectsDB.models import LanguageDatum, EntryTag, Dialect, LANGUAGES
 from dialectsDB import mywidgets, paradigms
 from django.contrib.auth.models import User
 from django.contrib.admin.widgets import FilteredSelectMultiple
@@ -38,13 +38,14 @@ class TagField(forms.Field):
 
 ########################FORMS#####################################
 class DatumBasicInfo(ModelForm): #This is just to get the basic information that will be shared on a page
-
+    glosslang = forms.ChoiceField(choices = LANGUAGES,label="Gloss language", required=True)
     class Meta:
         model = LanguageDatum
         fields = ('normalizationStyle','dialect', 'sourceDoc', 'permissions')
 
-class DatumBasicInfoPgNo(ModelForm): #This is just to get the basic information that will be shared on a page
-
+class DatumBasicInfoPgNo(DatumBasicInfo): #Would prefer to inherit this to DRY, but it's a PITA in django
+    #Glosslang isn't really used, since paradigms aren't multilingual at this point
+    #glosslang = forms.ChoiceField(choices = LANGUAGES,label="Gloss language", required=True)
     class Meta:
         model = LanguageDatum
         fields = ('normalizationStyle','dialect', 'sourceDoc', 'sourceLocation', 'permissions')
@@ -76,7 +77,7 @@ class DatumIndividualInfo(ModelForm):
         fields = ('normalizedEntry', 'originalOrthography','gloss', 'annotation', 'sourceLocation', 'entryTags')
         widgets = {
             'normalizedEntry': TextInput(),
-            'gloss' : mywidgets.TagAutoWidget(LanguageDatum.objects.all(),"gloss", multi=False),
+            'gloss' : mywidgets.TagAutoWidget(LanguageDatum.glossesList(), multi=False),
             'originalOrthography': TextInput(),
             'annotation': Textarea(attrs={'cols': 60, 'rows': 1}),
             'sourceLocation': TextInput()
@@ -119,7 +120,9 @@ class LoginForm(ModelForm):
 
 class NonModelSearchForm(forms.Form):
     wordSearch = forms.CharField(required=False, label='Arabic Word')
-    glossSearch = forms.CharField(required=False, label='Gloss', widget=mywidgets.TagAutoWidget(LanguageDatum.objects.all(),"gloss", multi=False,attrs={'cols': 15, 'rows': 1}))
+    #Queryset argument can be any iterable if no field is defined, so I'll just pass a list of all glosses to solve the 'multigloss' problem
+    glossSearch = forms.CharField(required=False, label='Gloss',
+                                  widget=mywidgets.TagAutoWidget(LanguageDatum.glossesList(), multi=False,attrs={'cols': 15, 'rows': 1}))
     annotationSearch = forms.CharField(required=False, label='Annotations')
     #tagSearch = forms.CharField(required=False, label='Tags, comma split')
     tagSearch = forms.CharField(required=False, label='Tags, comma split', widget=mywidgets.TagAutoWidget(EntryTag.objects.all(), "tagText", attrs={'cols': 30, 'rows': 1}))
