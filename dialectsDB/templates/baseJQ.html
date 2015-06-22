@@ -38,6 +38,7 @@
 <ul id = "topmenu">
     <li><a href ="/about.html">About</a>
     <ul>
+        <li><a href = "/login/">Login</a></li>
         <li><a>Info Lists</a>
             <ul>
                 <li><a href="/list/tags/">Entry Tags</a></li>
@@ -47,6 +48,7 @@
         </li>
     </ul>
     </li>
+     {% if user.is_authenticated %}
     <li><a>Data Input</a>
         <ul>
             <li><a href="/inputForm/">General Input</a></li>
@@ -62,8 +64,18 @@
             {% endif %}
                 </ul>
             </li>
+            <li><a>Admin Pages</a>
+                <ul>
+                    <li><a href = "/admin/dialectsDB/languagedatum/" target="_blank">Edit Datums</a></li>
+                    <li><a href = "/admin/dialectsDB/dialect/" target="_blank">Edit Dialects</a></li>
+                    <li><a href = "/admin/dialectsDB/biblioentrybibtex/" target="_blank">Edit Bibliography</a></li>
+                    <li><a href = "/admin/dialectsDB/entrytag/" target="_blank">Edit Tags</a></li>
+                    <li><a href = "/admin/dialectsDB/relatetag/" target="_blank">Edit Relation Tags</a></li>
+                </ul>
+            </li>
         </ul>
     </li>
+    {% endif %}
     <li><a>Data Visualization</a>
         <ul>
             <li><a href="/search/map/">Map search</a></li>
@@ -87,8 +99,8 @@
 {% endblock %}
 
 <div class = "loginfloat">
-    {% if request.user.is_authenticated %}
-        Logged in as: {{ request.user.username }}. <a href = "/logout/">Logout</a>
+    {% if user.is_authenticated %}
+        Logged in as: {{ user.username }}. <a href = "/logout/">Logout</a>
     {% else %}
         <a href = "/login/">Login?</a>
     {% endif %}

@@ -44,7 +44,7 @@ INSTALLED_APPS = (
      'dialectsDB',
     'leaflet',
     'djgeojson'
- #   'django_jinja'
+  ,'django_jinja'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -77,6 +77,27 @@ DATABASES = {
 }
 
 TEMPLATES = [
+      {
+        "BACKEND": "django_jinja.backend.Jinja2",
+        "APP_DIRS": True,
+
+        "OPTIONS": {
+            "match_extension": ".jinja",
+            "app_dirname": "templates/",
+             'context_processors': [
+
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.csrf'
+
+            ],
+        }
+    },
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
@@ -100,18 +121,8 @@ TEMPLATES = [
             ],
     },
     },
-    {
-        'BACKEND': 'django.template.backends.jinja2.Jinja2',
-        'DIRS': [
-            'templates/',
-            'dialectsDB/templates/',
-            'dialectsDB/templates/jinja/',
-        ],
-        'OPTIONS':
-            {
-                'environment': 'dialectsDB.jinja2.environment'
-            },
-    },
+
+
 ]
 TEMPLATE_LOADERS = (
     'django_jinja.loaders.FileSystemLoader',
