@@ -2,10 +2,8 @@ __author__ = 'Magidow'
 # coding=UTF-8
 #from django.db import models
 from django.contrib.auth.models import User
-#from polymorphic import PolymorphicModel
-#from taggit.managers import TaggableManager
-#from taggit.models import TaggedItemBase
 from django.contrib.gis.db import models  #I think this makes django.db unnecessary
+from django.contrib.postgres.fields import HStoreField
 import collections
 
 
@@ -29,6 +27,7 @@ class LanguageDatum(models.Model):
     normalizationStyle = models.CharField(max_length = 5, choices=NORM_STYLES)
     originalOrthography = models.TextField("arabic language entry in the original orthography in the source", blank=True)
     gloss = models.TextField("brief translation of entry")
+    multigloss = HStoreField(null=True)
     annotation = models.TextField("additional information on the entry", blank=True)
     lingRelationship = models.ManyToManyField('self', through='LingRelationship', blank=True, symmetrical=False, related_name='relationships')
     entryTags = models.ManyToManyField('EntryTag',blank=True, null=True)
@@ -99,6 +98,13 @@ class LanguageDatum(models.Model):
         serialData = self.myserializer()
         headerReturn = "|".join("{}".format(k) for (k,v) in serialData.items())
         return headerReturn
+
+    def glossesString(self):
+        pass #This function should give a comma joined list of all of the glosses, preferably in alphabetical order by language
+
+    def glossesSearch(self):
+        pass #this function should wrap a search - I think that's going to be too complicated, just implement it throughout
+
     class Meta:
         app_label = 'dialectsDB' #these have to be here
 
