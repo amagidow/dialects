@@ -4,7 +4,7 @@ __author__ = 'Magidow'
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models  #I think this makes django.db unnecessary
 from django.contrib.postgres.fields import HStoreField
-import collections
+import collections, bibtexparser
 
 
 
@@ -230,9 +230,13 @@ class DialectTag(AbstractTag):
 
 class BiblioEntryBibTex(models.Model): #Apparently cannot be abstract, but leaving its name to emphasize that it shouldn't be used
     bibTexKey = models.CharField(max_length=50, unique=True)
-    date = models.SmallIntegerField(max_length=4, blank=True, null=True) #not the most elegant solution, but we don't need full date fields
-    author = models.TextField("author(s), multiple names separated by ;", blank=True)
-    title = models.TextField("Optionally include title of work", blank=True)
+    date = models.CharField(max_length=20, blank=True, null=True) #not the most elegant solution, but we don't need full date fields
+    author = models.TextField("author(s)", blank=True)
+    secondauthor = models.TextField('editors or other authors', blank=True)
+    title = models.TextField("title of work", blank=True)
+    secondtitle = models.TextField("journal or volume title", blank=True)
+    volume = models.TextField("journal volume:issue or book volume", blank=True)
+    publisher = models.TextField("publisher", blank=True)
     annotation = models.TextField("additional annotations", blank=True)
     fullBibtex = models.TextField("Full Bibtex entry", blank=True)
     class Meta:
@@ -240,6 +244,28 @@ class BiblioEntryBibTex(models.Model): #Apparently cannot be abstract, but leavi
         ordering = ['bibTexKey']
     def __str__(self):
         return self.bibTexKey
+
+    def save(self, *args, **kwargs):
+        #Want to use bibltex stuff to automatically populate fields
+        if self.fullBibtex:# if there is bibtex data
+            #default is NOT to update fields that have been filled in manually
+            parsedbibtex = bibtexparser.loads(self.fullBibtex)
+            currententry = parsedbibtex.entries[0] #there should only be one here
+            self.author = self.author if self.author else currententry['author']
+            self.date = self.date if self.date else currententry['year']
+            self.title = self.title if self.title else currententry['title']
+            if currententry['type'] == 'article':
+                self.secondtitle = self.secondtitle if self.secondtitle else currententry['journal']
+                volumeissue = ":".join([currententry.get('volume',""), currententry.get('number',"")])
+                self.volume = self.volume if self.volume else volumeissue
+                if "Pages" not in self.annotation:
+                    self.annotation += "Pages:" + currententry['pages'] if currententry.get('pages',"") else ""
+            if currententry['type'] == 'incollection':
+                self.secondtitle = self.secondtitle if self.secondtitle else currententry['booktitle']
+                self.secondauthor = self.secondauthor if self.secondauthor else currententry.get('editor', "")
+            if currententry['type'] == 'incollection' or currententry['type'] == 'book':
+                self.publisher = self.publisher if self.publisher else currententry.get('publisher', "")
+        super(BiblioEntryBibTex,self).save(*args, **kwargs)
    # class Meta:
       #  abstract = True
 
