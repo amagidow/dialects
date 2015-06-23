@@ -259,6 +259,4 @@ demonstratives = StructuredTable(paradigmname="Demonstratives",  glosslang="en",
 
                     })
 
-#ALWAYS CHECK THAT YOU DON'T HAVE ANY NOGLOSS IN THE OUTPUTTED HTML - IF YOU DO, FIX YOUR PARADIGM
-
 paradigmDict = {'independentpronouns': independentpronouns, 'pronounsuffixes': pronounsuffixes, 'interrogatives': interrogatives, 'demonstratives': demonstratives} #Need to keep paradigms in here
