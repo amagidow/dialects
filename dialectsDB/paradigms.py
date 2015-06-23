@@ -26,7 +26,9 @@ class TableAxis(object):
 
 
 class StructuredTable(object):
-    def __init__(self, paradigmname, sharedtags, columns, rows, glosses, glosslang="en", annotation =True, subcolumns=True,subrows=True):
+    #If inherit is false, top-level columns (and rows?) are NOT inherited for purposes of glossing- this makes it easier when glosses don't differ
+    #If inherit is true, top-level colunns are inherited for purposes of glossing. Look at 'pronoun suffixes' versus 'demonstratives' to understand the difference
+    def __init__(self, paradigmname, sharedtags, columns, rows, glosses, glosslang="en", annotation =True, subcolumns=True,subrows=True, inherit = False):
         self.paradigmname = paradigmname
         #self.paradigmnid = paradigmid #TIMPORTNANT: his should be identical to the variable name!!!
         self.sharedtags = sharedtags
@@ -35,6 +37,7 @@ class StructuredTable(object):
         self.subrows = subrows
         self.columns = columns
         self.rows = rows
+        self.inherit = inherit #If inherit is false, top-level columns (and rows?) are NOT inherited for purposes of glossing
         self.glosses = {}
         for key, value in glosses.items(): #makes all keys alphabetized
             #print("Key: {}, value: {}".format(key, value))
@@ -49,7 +52,7 @@ class StructuredTable(object):
     def getGloss(self,tags):
         tags.sort()
         tags = list(filter(None,tags))
-        print("Tags in getGloss:{}".format(tags))
+        #print("Tags in getGloss:{}".format(tags))
         if "_".join(tags) in self.glosses:
             return self.glosses["_".join(tags)]
         else:
@@ -97,6 +100,7 @@ pronounsuffixes = StructuredTable(paradigmname="Pronoun Suffixes", glosslang="en
                        TableAxis("Feminine", "feminine")
                    ]),
                ],
+                #In this case, it's very inconvenient to have different glosses for different super-headers
                glosses={#underscore connected tag lists, but will be alphabetized so always works the same
                    "singular_1st-person" : "My",
                    "plural_1st-person" : "Our",
@@ -198,8 +202,63 @@ interrogatives = StructuredTable(paradigmname="Interrogatives", glosslang="en", 
                 } #	Interrogative Particle
                 )
 
+demonstratives = StructuredTable(paradigmname="Demonstratives",  glosslang="en", sharedtags= ['closed-class'], inherit=True,
+               columns= [
+                    TableAxis("Proximal","demonstrative.proximal", subheaders=[
+                        TableAxis("Adnominal","demonstrative.adnominal"),
+                        TableAxis("Pronominal", "demonstrative.pronoun"),
+                        TableAxis("Here", "demonstrative.adverb.place")
+                    ]),
+                    TableAxis("Distal", "demonstrative.distal",subheaders=[
+                        TableAxis("Adnominal","demonstrative.adnominal"),
+                        TableAxis("Pronominal", "demonstrative.pronoun"),
+                        TableAxis("There", "demonstrative.adverb.place")
+                    ]),
+                   TableAxis("Manner", "demonstrative.adverb.manner")
+               ],
+                rows = [
+                   TableAxis("All Genders and Nums","demonstrative.allgendersnums"),
+                   TableAxis("Singular","singular", subheaders=[
+                       TableAxis("Masculine", "masculine"),
+                       TableAxis("Feminine", "feminine")
+                   ]),
+                   TableAxis("Plural","plural", subheaders=[
+                       TableAxis("Masculine", "masculine"),
+                       TableAxis("Feminine", "feminine")
+                   ]),
+                ],
+                #In this case, we NEED inheritance of superheaders to properly gloss, so inherit=true
+               glosses={
+                   #Proximal
+                    "demonstrative.proximal_demonstrative.adnominal_demonstrative.allgendersnums" : "This, these",
+                    "demonstrative.proximal_demonstrative.adnominal_singular_masculine" : "This (m.)",
+                    "demonstrative.proximal_demonstrative.adnominal_singular_feminine" : "This (f.)",
+                    "demonstrative.proximal_demonstrative.pronoun_singular_masculine" : "This (m.)",
+                    "demonstrative.proximal_demonstrative.pronoun_singular_feminine" : "This (f.)",
+                    "demonstrative.proximal_demonstrative.adverb.place_demonstrative.allgendersnums" : "Here",
+                    "demonstrative.proximal_demonstrative.adnominal_plural_masculine" : "These (m.)",
+                    "demonstrative.proximal_demonstrative.adnominal_plural_feminine" : "These (f.)",
+                    "demonstrative.proximal_demonstrative.pronoun_plural_masculine" : "These (m.)",
+                    "demonstrative.proximal_demonstrative.pronoun_plural_feminine" : "These (f.)",
+                   
+                   #Distal
+                   
+                    "demonstrative.distal_demonstrative.adnominal_demonstrative.allgendersnums" : "That, those",
+                    "demonstrative.distal_demonstrative.adnominal_singular_masculine" : "That (m.)",
+                    "demonstrative.distal_demonstrative.adnominal_singular_feminine" : "That (f.)",
+                    "demonstrative.distal_demonstrative.pronoun_singular_masculine" : "That (m.)",
+                    "demonstrative.distal_demonstrative.pronoun_singular_feminine" : "That (f.)",
+                    "demonstrative.distal_demonstrative.adverb.place_demonstrative.allgendersnums" : "There",
+                    "demonstrative.distal_demonstrative.adnominal_plural_masculine" : "Those (m.)",
+                    "demonstrative.distal_demonstrative.adnominal_plural_feminine" : "Those (f.)",
+                    "demonstrative.distal_demonstrative.pronoun_plural_masculine" : "Those (m.)",
+                    "demonstrative.distal_demonstrative.pronoun_plural_feminine" : "Those (f.)",
 
+                   #Manner
+                    "demonstrative.adverb.manner_demonstrative.allgendersnums" : "Thusly"
+
+                    })
 
 #ALWAYS CHECK THAT YOU DON'T HAVE ANY NOGLOSS IN THE OUTPUTTED HTML - IF YOU DO, FIX YOUR PARADIGM
 
-paradigmDict = {'independentpronouns': independentpronouns, 'pronounsuffixes': pronounsuffixes, 'interrogatives': interrogatives} #Need to keep paradigms in here
+paradigmDict = {'independentpronouns': independentpronouns, 'pronounsuffixes': pronounsuffixes, 'interrogatives': interrogatives, 'demonstratives': demonstratives} #Need to keep paradigms in here

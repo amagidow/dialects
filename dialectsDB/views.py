@@ -237,21 +237,26 @@ def crossSearchView(request):
         if mainresults.is_valid() and crossresults.is_valid():
             first = True
             mainQS = "" #is this necessary? Don't understand python scope
+            dialectQS = None
             mainsearchtext = ""
             headerRows = ["Dialect"]
             bodyRows = [] #Going to be a list of lists
             for msform in mainresults: #Everything from this section should be 'anded' to produce the final main query
                 if first:
                     mainQS = searchLanguageDatum(msform.cleaned_data, request.user)
+                    dialectQS = Dialect.objects.filter(languagedatum__in=mainQS)
                     mainsearchtext = searchText(msform.cleaned_data) + "\n"
                     first = False
                 else:
-                    mainQS = mainQS & searchLanguageDatum(msform.cleaned_data, request.user)#Fix this, it won't work correctly, see searchMultiType
+                    currentQS = searchLanguageDatum(msform.cleaned_data, request.user)
+                    dialectQS = dialectQS & Dialect.objects.filter(languagedatum__in=currentQS)
+                    mainQS = mainQS.distinct() & currentQS.distinct()#Still need to 'and' to get only those forms that match the criteria
                     mainsearchtext + searchText(msform.cleaned_data) + "\n"
+            finalQS = mainQS.filter(dialect__in=dialectQS)
             headerRows.append("Main:" + mainsearchtext)
-            dialectsList = Dialect.objects.filter(languagedatum__in=mainQS).distinct().order_by('dialectCode')
+            dialectsList = Dialect.objects.filter(languagedatum__in=finalQS).distinct().order_by('dialectCode')
             first = True
-            columnQSs = [mainQS,]
+            columnQSs = [finalQS,]
             for csform in crossresults: #every one of these things is its own search
                 headerRows.append(searchText(csform.cleaned_data))
                 columnQSs.append(searchLanguageDatum(csform.cleaned_data, request.user)) #Each of these queries should include all of the results of these searches

@@ -12,7 +12,12 @@
 
 {##################MACROS#########################}
 {% macro cellaction(cellglosstags, cellalltags, relatetags = '') -%}
-{% set glossTags = dataStruct.getGloss(cellglosstags) %}
+    {% if dataStruct.inherit %}
+        {% set glossTags = dataStruct.getGloss(cellalltags) %}
+    {% else %}
+        {% set glossTags = dataStruct.getGloss(cellglosstags) %}
+    {% endif %}
+
     {% if glossTags != "NoGloss" %}
 {% set cellID = glossTags + ":" + cellalltags|join("_") -%}
 {% if relatetags -%}
