@@ -4,6 +4,7 @@ from django import forms
 from django.forms import ModelForm,TextInput, Textarea,ValidationError
 from dialectsDB.models import LanguageDatum, EntryTag, Dialect, LANGUAGES
 from dialectsDB import mywidgets, paradigms
+from dialects.settings import STATIC_URL
 from django.contrib.auth.models import User
 from django.contrib.admin.widgets import FilteredSelectMultiple
 
@@ -87,12 +88,19 @@ class DatumIndividualInfo(ModelForm):
             #'entryTags' : CheckboxSelectMultiple()
         }
 
-    class Media:
+    class Media: #Media for the Filtered select multiple -USELESS. Django does not maintain the order, so JS doesn't work.
         css = {
-            'all':['admin/css/widgets.css'],
+            'all':['admin/css/widgets.css', STATIC_URL+"admin/css/forms.css" ],
         }
-        # Adding this javascript is crucial
-        #js = ['/admin/js/jquery.init.js','/admin/jsi18n/', 'admin/js/ajax_filtered_fields.js']
+        #Not sure which javascript is absolutely required, taking a kitchen sink approach
+        #List comprehension adds the STATIC_URL to all of these paths
+        #js = ("/admin/jsi18n/", STATIC_URL+ 'admin/js/core.js', STATIC_URL+ "admin/js/jquery.js")
+        #js. (STATIC_URL + x for x in ['admin/js/core.js', "admin/js/admin/RelatedObjectLookups.js",
+            #  "admin/js/jquery.js", "admin/js/jquery.init.js",
+             # "admin/js/actions.js", "admin/js/SelectBox.js", "admin/js/related-widget-wrapper.js", "admin/js/SelectFilter2.js"])
+        #js = tuple(js)
+        #print(js)
+        #js.append("/admin/jsi18n/") #Not under /static/
 
 
 class SearchForm(ModelForm):

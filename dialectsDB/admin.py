@@ -8,6 +8,7 @@ from django.contrib.gis import forms
 from django.contrib.gis.db import models
 from django.contrib.auth.admin import UserAdmin
 from dialectsDB.utilityfuncs import permissionwrapper
+from django.contrib.admin.widgets import FilteredSelectMultiple
 
 # Register your models here.
 
@@ -18,9 +19,12 @@ class LingRelationshipInline(admin.TabularInline):
 
 
 class LanguageDatumAdmin(admin.ModelAdmin):
-    search_fields = ['normalizedEntry', 'gloss', 'annotation', 'dialect__dialectCode', 'entryTags__tagText']
+    search_fields = ['normalizedEntry', 'gloss', 'annotation', 'dialect__dialectCode', 'entryTags__tagText', 'sourceDoc__bibTexKey', 'sourceDoc__author', 'sourceDoc__title']
     list_display = ['normalizedEntry', 'gloss', 'annotation', 'dialect', 'sourceDoc', 'sourceLocation', 'contributor']
     inlines = (LingRelationshipInline,)
+    formfield_overrides = {
+        models.TextField: {'widget': forms.Textarea(attrs={'rows':1, 'cols':60})}
+    }
     def get_queryset(self, request): #tutorials say to use function 'queryset' but that's not true, get_queryset seems to be the on that actually works
         qs = super(LanguageDatumAdmin, self).get_queryset(request)
         if request.user.is_superuser:
@@ -29,6 +33,10 @@ class LanguageDatumAdmin(admin.ModelAdmin):
             contributor = Contributor.objects.get(user=request.user)
             qs= qs.filter(contributor=contributor) #normal users can only see their own contributions
             return qs
+    class Meta:
+        widgets = {
+            'entryTags': FilteredSelectMultiple(verbose_name=('Tags'), is_stacked=False) #Does not work
+        }
 
  #   fieldsets = (
   #      (None, {
@@ -43,7 +51,11 @@ class LanguageDatumAdmin(admin.ModelAdmin):
     #list_display_links = ('normalizedEntry',)
 
 class EntryTagAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': forms.Textarea(attrs={'rows':1, 'cols':60})}
+    }
     list_display = ['tagText', 'tagExplanation']
+
 
 class DialectAdminForm(forms.ModelForm):
     class Meta:
@@ -58,6 +70,10 @@ class DialectAdminForm(forms.ModelForm):
 
 
 class DialectAdmin(admin.GeoModelAdmin):
+    formfield_overrides = {
+        models.TextField: {'widget': forms.Textarea(attrs={'rows':1, 'cols':60})}
+    }
+    list_display = ['dialectCode', 'dialectNameEn']
     form = DialectAdminForm
 
     #formfield_overrides = {models.PointField: {'widget' : widgets.GeopositionWidget}}
@@ -66,6 +82,7 @@ class RelTagsAdmin(admin.ModelAdmin): #really don't know if this is necessary
     pass
 
 class BiblioAdmin(admin.ModelAdmin):
+    list_display = ['bibTexKey', 'author', 'title', 'secondtitle', 'annotation' ]
     pass
 
 

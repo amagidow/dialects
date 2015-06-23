@@ -264,7 +264,8 @@ def checkCodes(fileLocation):
 
 #checkCodes(codeCheckLoc)
 
-importStructuredToDB('D:\\Dropbox\\AlexDocs\\Documents\\Dialect Database Material\\prosuffixexport.csv', generalTagsProSuff)
+#Run it using this:
+#importStructuredToDB('D:\\Dropbox\\AlexDocs\\Documents\\Dialect Database Material\\prosuffixexport.csv', generalTagsProSuff)
 
 #def LoadHeader(header):
     #returnableHeader = []
