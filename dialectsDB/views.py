@@ -308,5 +308,15 @@ def contributorslistview(request):
     return render(request, "infotable.html", {'pageTitle' : 'Contributors', 'paradigmDict': paradigmDict.items(),
                                           'tableCaption' : "Contributors", 'headerList': headers, 'allItems': listOut
                                           })
+
+def bibliolistview(request):
+    headers = ['Author(s)', 'Title', 'Year', 'Journal or Volume Title', 'Volume', 'Publisher', 'Additional Info', 'Unique ID']
+    allBibs = BiblioEntryBibTex.objects.all()
+    listOut = [[a.author,a.title, a.date, a.secondtitle, a.volume, a.publisher, a.annotation, a.bibTexKey]
+               for a in allBibs]
+    return render(request, "infotable.html", {'pageTitle' : 'Bibliographic Entries', 'paradigmDict': paradigmDict.items(),
+                                          'tableCaption' : "Bibliographic Entries", 'headerList': headers, 'allItems': listOut
+                                          })
+
 def aboutview(request):
     return render(request, 'about.html', {'pageTitle' : 'About', 'paradigmDict': paradigmDict.items()})

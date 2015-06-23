@@ -229,7 +229,7 @@ class DialectTag(AbstractTag):
 
 
 class BiblioEntryBibTex(models.Model): #Apparently cannot be abstract, but leaving its name to emphasize that it shouldn't be used
-    bibTexKey = models.CharField(max_length=50, unique=True)
+    bibTexKey = models.CharField(max_length=100, unique=True)
     date = models.CharField(max_length=20, blank=True, null=True) #not the most elegant solution, but we don't need full date fields
     author = models.TextField("author(s)", blank=True)
     secondauthor = models.TextField('editors or other authors', blank=True)
