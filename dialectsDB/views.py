@@ -18,61 +18,72 @@ def mylogout(request):
     logout(request) #Sufficient to just log the person out
     return HttpResponseRedirect("/login/")
 
-
-
 ############ Input Forms should ALL be login required for the time being ###################
 
-
-
-#Basic free input form view and validation
+#Basic free input form view and validation. Allows a single dialect to have multiple datums input at once
+#Use of this form by end users is strongly discouraged
 #Not sure if I should require specific permissions at this point - having a login sufficient?
 @login_required
 def inputForm(request,numSets=1): #default is one, but can be sent more
+    """
+    Basic free input form view and validation. Allows a single dialect to have multiple datums input at once.
+    Use of this form by end users is strongly discouraged.
+    :param request:
+    :param numSets: Number of initial datums shown. Basically depreciated with addition of dynamic-formsets.
+    :return:
+    """
     numSets = int(numSets) #didn't know I have to cast this, but apparently I do, otherwise it throws an error
     datumForms = formset_factory(DatumIndividualInfo, extra=numSets)
-    contributor = Contributor.objects.get(user=request.user)
+    contributor = Contributor.objects.get(user=request.user) #from user string, retrieve containing class of contributor
     if request.method == 'POST':#validate
         #dialectForm holds the basic dialect information
+        #Populate appropriate fields according to contributor's preferences
         dialectForm = DatumBasicInfo(request.POST, initial={'normalizationStyle': contributor.defaultEncoding , 'permissions': contributor.defaultPermission,
                                                             'glosslang' : contributor.defaultLanguage}) #have not tested that auto-set glosslang works
-        datumForms = datumForms(request.POST, request.FILES)
-        initialObject = LanguageDatum()
+        datumForms = datumForms(request.POST, request.FILES) #datumForms holds the actual datums themselves
+        initialObject = LanguageDatum() #Assinging this to a languagedatum object may be unnecessary
         finalObjectList = []
         if dialectForm.is_valid():
-            initialObject = dialectForm.save(commit=False)
-            initialObject.contributor = contributor
-            inputlang = dialectForm.cleaned_data["glosslang"]
-            print("DialectForm: Valid")
-            #print(deliberatelybreakingit)
+            initialObject = dialectForm.save(commit=False) #populate initial object with the shared data. This object will not be saved
+            initialObject.contributor = contributor #add contributor to shared data
+            inputlang = dialectForm.cleaned_data["glosslang"] #retrieve gloss language - this is tested, works
             if datumForms.is_valid():
-                print("DatumForm:Valid")
-                for form in datumForms:
+                for form in datumForms: #for each form with actual data
                     finalObject = form.save(commit=False)
                     glossdict = {inputlang : finalObject.gloss}
                     finalObject.multigloss = glossdict
+                    #assign missing informaiton from initialObject form data
                     finalObject.normalizationStyle = initialObject.normalizationStyle
                     finalObject.dialect = initialObject.dialect
                     finalObject.sourceDoc = initialObject.sourceDoc
                     finalObject.contributor = initialObject.contributor
                     finalObject.permissions = initialObject.permissions
                     tags = form.cleaned_data['entryTags'] #this gives a list of tags
-                    #print(tags)
                     finalObject.save()
                     finalObject.entryTags = tags #simple as making it equal the list, good to know
                     form.save_m2m() #THE FORM SAVES THE M2M relationship!
                     finalObjectList.append(finalObject)
-            return render(request, 'tableView.html', {'object_list' : finalObjectList})
-        #datumForms = datumForms(request.GET) saw this in a tutorial, no idea what it means
-        #test
-       # pass
+            return render(request, 'tableView.html', {'object_list' : finalObjectList}) #This needs to be replaced eventually
         return render(request, 'inputForm.html',{'pageTitle': "Single Dialect Multi-Datum Input Form", 'paradigmDict': paradigmDict.items(),  'dialectForm' : dialectForm, 'dataFormset': datumForms})
     else:
-        dialectForm = DatumBasicInfo(initial={'normalizationStyle': contributor.defaultEncoding , 'permissions': contributor.defaultPermission})
-        #datumForms = formset_factory(DatumIndividualInfo, extra=numSets)
+        dialectForm = DatumBasicInfo(initial={'normalizationStyle': contributor.defaultEncoding , 'permissions': contributor.defaultPermission, 'glosslang' : contributor.defaultLanguage})
         return render(request, 'inputForm.html',{'pageTitle': "Single Dialect Multi-Datum Input Form", 'paradigmDict': paradigmDict.items(), 'dialectForm' : dialectForm, 'dataFormset': datumForms})
 
+#This view retrieves paradigmatic input via a complex jinja view which itself has a great deal of logic
+#The paradigm itself is stored in paradigms.py and is rendered by the jinja template
+#Like the inputForm view, a basic dialect information view is shown above the complex input
+#Annotation in the table can be set to on (toggleAnnot=A) or off (toggleAnnot=b)
 @login_required
-def complexTableInput(request,paradigmname,toggleAnnot="A"): #Input
+def complexTableInput(request,paradigmname,toggleAnnot="A"):
+    """
+    This view retrieves paradigmatic input via a complex jinja view which itself has a great deal of logic.
+    The paradigm itself is stored in paradigms.py and is rendered by the ComplexTableInput.jinja template.
+    Like the :func:inputForm view, a basic dialect information view is shown above the complex input
+    :param request:
+    :param paradigmname: String containing the name of the paradigm from URL config
+    :param toggleAnnot: Either `A` (include annotation columns) or `NA` (no annotation columns). To eventually be replaced with Javascript toggles.
+    :return:
+    """
     combinedDict = []
     retrievedParadigm = paradigmDict[paradigmname]
     contributor = Contributor.objects.get(user=request.user)
@@ -104,7 +115,14 @@ def complexTableInput(request,paradigmname,toggleAnnot="A"): #Input
 ############## View functions which are sensitive to permissions ###############
 
 #Have not altered this to work with multilingual glosses, probably unnecessary
+#This view shows a complex table using the same paradigms as in complexTableInput
+#The actual form asks for the paradigm and for the dialects (comma separated list with autocompletion)
 def complexTableView(request):
+    """
+    This view shows a complex table using the same paradigms as in complexTableInput and which are stored in the paradigms dictionary
+    :param request:
+    :return:
+    """
     retrievedParadigm = paradigmDict['independentpronouns'] #random default since something needs to be passed
     if request.method == 'POST':
         dialectForm = ParadigmSearchForm(request.POST, request.FILES)
@@ -112,7 +130,7 @@ def complexTableView(request):
             result = dialectForm.cleaned_data
             #dialects = list(filter(None, result.get("dialectSearch").split(",")))
             dialects = [x for x in result.get("dialectSearch").split(",") if x.strip()] #If there's data, put it into a list of dialects
-            print("DialectsCleaned: {}".format(dialects))
+            #print("DialectsCleaned: {}".format(dialects))
             paradigmname = result.get("paradigm")
             retrievedParadigm = paradigmDict[paradigmname]
             return render(request, 'ComplexTableView.jinja', {'pageTitle': retrievedParadigm.paradigmname, 'paradigmDict': paradigmDict.items(),'dataStruct': retrievedParadigm, 'dialectForm': dialectForm, 'dialectList' : dialects})
@@ -123,13 +141,19 @@ def complexTableView(request):
 
 
 
-
+#This view handles either map or list-style searches, since they are almost identical. Type is passed via the URLConfig
+#List-type view actually includes 'color' as a convenient shortcut for ANDing queries, and to produce groups
 def searchMultiType(request, type="map"):
-    numSets = 1
+    """
+    This view handles either map or list-style searches, since they are almost identical. Type is passed via the URLConfig
+    :param request: HTTP request
+    :param type: String, either `map` or `list`, handled by URLConfig
+    :return: render of `searchMulti.html`
+    """
     searchForms = formset_factory(NonModelSearchFormColor)
+    #initializing for scope
     searchquery = ''
-    results = ''
-    targetpage = ""
+    targetPage = ""
     pagetitle = ""
     results = ''
     if request.user.is_authenticated(): #If there's a user to get, make contributor equal to that user
@@ -146,6 +170,7 @@ def searchMultiType(request, type="map"):
         csvLink = ""
         results = '[]'
     sq = ''
+    #This need not be done with POST (no privacy concerns) but GET was causing problems with initial page loads giving "required" errors
     if request.method == "POST":
         searchresults = searchForms(request.POST, request.FILES, prefix='ms')
         #request.session['output'] = 'GotToPost'
@@ -188,9 +213,7 @@ def searchMultiType(request, type="map"):
                     else:
                         dialectQS = dialectQS & Dialect.objects.filter(languagedatum__in=member[0]) #only AND the dialects, not the data itself
                         finalqueryset = finalqueryset.distinct() | member[0].distinct() #combine results, the ANDing happens at the level of the dialect
-                        #print("Finalquery set2: {}".format(str(finalqueryset).encode('ascii', errors='backslashreplace')))
                 #This has to be after all the member functions are over, outside of that loop, otherwise the QS actions are pointless
-                #print("Final dialectQS: {}".format(str(dialectQS).encode('ascii', errors='backslashreplace')))
                 finalqueryset = finalqueryset.filter(dialect__in=dialectQS)
                 markers += generateMarkers((finalqueryset,groupcolor)) #Up to here works for both map and list
 
@@ -229,6 +252,11 @@ def searchMultiType(request, type="map"):
 
 
 def crossSearchView(request):
+    """
+    This view generates a implicational-type search where the results from one search are collated against an infinite number of secondary searches
+    :param request:
+    :return:
+    """
     mainSearch = formset_factory(NonModelSearchForm, extra=1)
     crossSearch = formset_factory(NonModelSearchForm, extra=1)
     if request.method == 'POST':

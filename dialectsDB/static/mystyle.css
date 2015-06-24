@@ -46,6 +46,7 @@
 }
 
 
+
 .titlebar .arabicTitle {
     font-family: "Sakkal Majalla", "Scheherazade", "Arabic Typesetting", "Lateef";
     	font-weight: bold;
@@ -60,23 +61,27 @@
 .titlebar a {
     text-decoration: none;
 }
+.loginfloat a {
+    text-decoration: underline;
+}
+
 
 /* unvisited link */
-.titlebar a:link {
+.titlebar a:link,.loginfloat a  {
     color: white;
 }
 
 /* visited link */
-.titlebar a:visited {
+.titlebar a:visited, .loginfloat a {
     color: white;
 }
 
 /* mouse over link */
-.titlebar a:hover {
+.titlebar a:hover, .loginfloat a {
     color: #f5f5f5;
 }
 
 /* selected link */
-.titlebar a:active {
+.titlebar a:active, .loginfloat a{
     color: white;
 }
