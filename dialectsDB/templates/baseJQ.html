@@ -101,7 +101,7 @@
 {% endblock %}
 
 <div class = "loginfloat">
-    {% if user.is_authenticated %}
+    {% if user.is_active %}
         Logged in as: {{ user.username }}. <a href = "/logout/">Logout</a>
     {% else %}
         <a href = "/login/">Login?</a>
