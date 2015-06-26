@@ -44,3 +44,6 @@ Until now, this project has been developed almost entirely by Alexander Magidow 
 primarily in Python and Django, not as much in HTML/Javascript/Jquery, so contributions in those areas are particularly appreciated.
 The todo file in this directory will list tasks that need to be done and for which contributions would be appreciated. Code commenting
 and documentation is ongoing as of 6/26/2015, so please excuse the mess. 
+
+Currently contributions are only accepted by official collaborators.
+Please contact lead developer Alex Magidow (amagidow AT gmail DOT com) to be added as a collaborator. 
