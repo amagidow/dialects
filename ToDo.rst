@@ -1,7 +1,7 @@
 ------------------------------------------------------
 To Do List of Changes/Improvements to Dialects Project
 ------------------------------------------------------
-The following tasks are grouped by level of difficult/time commitment.
+The following tasks are grouped by level of difficult/time commitment. It can be helpful to contact the lead developer, Alex Magidow, to inquire about any of these before undertaking them.
 
 Last revised: 6/26/2015
 
@@ -38,9 +38,11 @@ Somewhat complex
 
 Backend
 ^^^^^^^
+- Develop workaround to Hstore search bug/function (https://code.djangoproject.com/ticket/25021)
 
 Extremely complex
 ##################
 
-- Export to doc formats
-- Local versions with reliable upload
+- Allow simple export of multiple paradigms directly to Word or similar formats
+- Allow for users to download a local version of the website for use during field work, and then to upload fieldwork data later on
+- Create a widget that allows for simple transformation of CSV type data into the format used in this database.
