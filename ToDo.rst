@@ -35,10 +35,14 @@ Backend
 
 Somewhat complex
 ################
+Views
+^^^^^
+- Develop view that allows for entering both raw data, and glosses, but which does tagging/relationships behind the scenes. 
 
 Backend
 ^^^^^^^
 - Develop workaround to Hstore search bug/function (https://code.djangoproject.com/ticket/25021)
+- Develop parser for gloss-type views
 
 Extremely complex
 ##################
