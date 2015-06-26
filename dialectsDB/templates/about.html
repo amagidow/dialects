@@ -12,26 +12,61 @@ The Database of Arabic Dialects (ضاد) is a project to collect the vast amount
     and powerful data visualization. Data input relies on contributions from scholars in the field - user contributions are listed prominently on the website so that
         contributors can receive credit for their work. The interface will allow for control over data - not all data must be public,
         so  users can take advantage of the features of the website even for private data that is part of a work in progress.</p>
+<h2>Using this website</h2>
+<p>In the website's current state, users with no account may use all of the data visualization tools. The only current public dataset is a collection of
+demonstrative data that were originally published in <strong>Magidow, Alexander. 2013.<i>Towards a Sociohistorical Reconstruction of Pre-Islamic Arabic Dialect Diversity</i>
+Ph.D. dissertation: University of Texas at Austin</strong> (available <a href="http://repositories.lib.utexas.edu/handle/2152/21378">here</a>). We anticipate adding more
+public data soon.</p>
 
+<p>There are four main data visualization tools. In the map and list views, you can view all the publicly available data simply by pressing the search button. For more narrrow
+searches, follow the instructions on the page. In the paradigm view, you can select as many dialects as you want to visualize entire paradigms. Of course, if no data is available,
+nothing will show up in these paradigms. In the 'cross-search' view, you can do an 'implicational' type search, where you look at dialects which have a particular form, and see what
+other forms are found in those same dialects.</p>
+
+<p>If you are interested in obtaining a user account in order to enter your own data, please see the section on contributing below.</p>
+
+
+<h2>Contributing</h2>
+<p>This is an open source project, released under the GPL license. The Github repository is <a href = "https://github.com/amagidow/dialects">here.</a> Note that the source code
+is open source - the data held in the database is subject to contributor permissions.</p>
+<p>There are two primary ways contributors can assist the project at the moment. The first is to submit data, whether via the website or by submitting a CSV type file, and to test data entry and data visualization components.
+The second is to contribute code, whether python/django, HTML/CSS or Javascript.</p>
+<h3>Data contributors</h3>
+<p>We are currently looking for scholars interested in uploading their data to the website to test how well the database can accommodate different data types,
+ as well as to develop more data input views. Interested scholars should contact amagidow AT gmail DOT com, describing their data sets and how/whether they intend to continue entering data.</p>
+ <h3>Code Contributors</h3>
+ <p>Potential code contributors should view the readme in the git repository and contact the lead developer with any questions.</p>
+
+
+<h2>How it works </h2>
 <p>The database itself is designed around the central concept of the 'language datum', a single piece of linguistic data.
     Each datum can be any kind of string with meaningful, searchable linguistic information, so in theory the database could
 hold anything from individual phonemes to idioms. Every datum is marked with a set of tags to allow for easy searching. Each datum is linked to a dialect and
 to a bibliographic entry, and each datum has permission information and is linked to its contributor. Datums may be in relationships with other datums,
- with the types of relationships expressed via a different set of tags.</p>
+ with the types of relationships expressed via another set of tags.</p>
 
 <p>The website is based on a Django framework, with a PostgreSQL database backend.
     Many pages rely on Jquery, Datatables and Leaflet, and some are rendered using Jinja2 templates.
     All of these tools are open-source, free software, and we plan to open-source this website as well to contribute back to the community.
     The design of the database is flexible enough to handle almost any language, and many of the database tools are easily adapted to handle other languages.
     The tag ontologies are entirely free to be defined by the users, and so it should be a useful tool for any language with high dialectal diversity
-    dispersed across a large geographical area.
+    dispersed across a large geographical area. The website is currently hosted by Pythonanywhere.
 </p>
+<h2>Citing the website and data</h2>
+<p>The simplest way to cite the website is as follows. Note that as code contributors increase, the attribution may change:</p>
+<p style="text-align:center">Magidow, Alexander. 2015. Database of Arabic Dialects. site: http://database-of-arabic-dialects.org/</p>
+
+<p>Most data is drawn from published sources, so you should cite that source as well (and refer to it for further information).
+Every datum has also been contributed by a scholar, so if you find yourself citing many datums from the same scholar, it would be polite to acknowledge them in
+the acknowledgements or a footnote in your paper.</p>
+
 
 <p>This website was developed primarily by Alexander Magidow at the Univeristy of Rhode Island where he is an Assistant Professor of Arabic.
     The current state of the project is the culmination of nearly 3 years of research and development.
     He would like to thank Yonatan Belinkov for his help in the design of the database framework, for his suggestion to use Django,
     and for contributing some code to the project. </p>
 
+<p style="text-align:center">This page last updated 6/26/2015</p>
 </div>
 
 {% endblock %}
