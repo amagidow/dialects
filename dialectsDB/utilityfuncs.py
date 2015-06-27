@@ -322,9 +322,11 @@ def permissionwrapper(user=None, export = False):
             contributorSet = contrib.collaborators_set.all() #Gets all the people who have selected this user as contributors
             #Second clause should get even stuff that is private
             queryreturn = LanguageDatum.objects.filter(permissions__contains="Pub") | LanguageDatum.objects.filter(contributor=contrib)
-            #print("qr count 1:{}".format(queryreturn.count()))
+            print("qr count 1:{}".format(queryreturn.count()))
             for person in contributorSet:
+                print(person)
                 queryreturn = queryreturn | LanguageDatum.objects.filter(contributor=person)
+                print("qr count 2:{}".format(queryreturn.count()))
             if export:
                 queryreturn = queryreturn.exclude(permissions__contains="NoE") # if exporting, exclude those not available for export
                 #This will have duplicates, handle later
