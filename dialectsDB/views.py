@@ -219,7 +219,11 @@ def searchMultiType(request, type="map"):
 
                 #Doing permissions manually here, this is not the best way to do things but works for now
                 if type=="map":
+                    #Need to alter this to take collaborators into account
                     colorQS = finalqueryset.filter(contributor=contributor) | finalqueryset.exclude(contributor=contributor).exclude(permissions__contains="NoE") #This will also exclude things from the user - need to fix it
+                    contributorSet = contributor.collaborators_set.all()
+                    for person in contributorSet:
+                        colorQS = colorQS | LanguageDatum.objects.filter(contributor=person)
                     csvMarkers += generateMarkers((colorQS.distinct(), groupcolor))
             #print("Markers: {}".format(markers))
             #print(finalqueryset)
