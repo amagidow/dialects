@@ -30,8 +30,8 @@ class LanguageDatumAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return qs #super user can see everyone's to allow for removal of bad data
         else:
-            contributor = Contributor.objects.get(user=request.user)
-            qs= qs.filter(contributor=contributor) #normal users can only see their own contributions
+            #Note that this does NOT inherit the queryset from super. Bad programming, but doesn't seem to matter right now
+            qs= permissionwrapper(request.user) #normal users can only see their own contributions
             return qs
     class Meta:
         widgets = {
