@@ -130,6 +130,9 @@ class Contributor(models.Model):
     defaultPermission = models.CharField("default permission setting for data input",max_length=8, choices=LanguageDatum.PERMISSION_TYPES)
     defaultEncoding = models.CharField("default transliteration style", max_length = 5, choices=NORM_STYLES)
     defaultLanguage = models.CharField("default language used for glosses", max_length = 5, choices=LANGUAGES)
+    collaborators = models.ManyToManyField('self',"collaborators who can view your private data",
+                                           help_text="note that this is NOT a symmetrical relationship- by making someone a collaborator, you are not able to see their private data",
+                                           symmetrical=False)
     class Meta:
         app_label = 'dialectsDB'
     def __str__(self):
