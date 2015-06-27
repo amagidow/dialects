@@ -319,7 +319,8 @@ def permissionwrapper(user=None, export = False):
     if user:
         if user.is_active and user.is_authenticated():
             contrib = Contributor.objects.get(user=user)
-            contributorSet = contrib.collaborators_set.all() #Gets all the people who have selected this user as contributors
+            #Naming convention for set is to the original model, hence you get contributor_set here, not 'collaborators_set'
+            contributorSet = contrib.contributor_set.all() #Gets all the people who have selected this user as contributors
             #Second clause should get even stuff that is private
             queryreturn = LanguageDatum.objects.filter(permissions__contains="Pub") | LanguageDatum.objects.filter(contributor=contrib)
             print("qr count 1:{}".format(queryreturn.count()))
