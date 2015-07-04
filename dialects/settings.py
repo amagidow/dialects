@@ -37,9 +37,6 @@ INSTALLED_APPS = (
 
 
 
-SESSION_COOKIE_SECURE=True
-CSRF_COOKIE_SECURE=True
-
 ROOT_URLCONF = 'dialects.urls'
 
 WSGI_APPLICATION = 'dialects.wsgi.application'
