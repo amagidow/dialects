@@ -157,6 +157,14 @@ class Dialect(models.Model):
     #def save(self, *args, **kwargs):
     #    self.centerLoc = Point(self.centerLong, self.centerLat)
     #    super().save(*args, **kwargs)
+
+    #produces a user readable string of all the citing sources for this dialect's data
+    @property
+    def sourceciting(self):
+        sources = BiblioEntryBibTex.objects.filter(languagedatum__dialect=self).distinct()
+        sourcescs = [x.citationstring for x in sources]
+        return "; ".join(sourcescs)
+
     class Meta:
         app_label = 'dialectsDB'
         ordering = ['dialectCode']
@@ -247,6 +255,10 @@ class BiblioEntryBibTex(models.Model): #Apparently cannot be abstract, but leavi
         ordering = ['bibTexKey']
     def __str__(self):
         return self.bibTexKey
+
+    @property
+    def citationstring(self):
+        return self.author + " (" + self.date + ")"
 
     def save(self, *args, **kwargs):
         #Want to use bibltex stuff to automatically populate fields

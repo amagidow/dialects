@@ -321,11 +321,11 @@ def taglistview(request):
 
 
 def dialectlistview(request):
-    headers = ['Dialect Code', 'Longform Name', 'Latitude', 'Longitude'] #Leaving out dialect tags for now
+    headers = ['Dialect Code', 'Longform Name', 'Latitude', 'Longitude', 'Sources'] #Leaving out dialect tags for now
     allTags = Dialect.objects.all()
     dialectCount = allTags.count()
     extrainfo = "Database contains a total of {} dialects".format(dialectCount)
-    listOut = [[a.dialectCode, a.dialectNameEn, a.centerLoc.y, a.centerLoc.x] for a in allTags]
+    listOut = [[a.dialectCode, a.dialectNameEn, a.centerLoc.y, a.centerLoc.x, a.sourceciting] for a in allTags]
 
     #print("Alltags: {}".format(listOut))
     return render(request, "infotable.html", {'pageTitle' : 'Dialect List', 'paradigmDict': paradigmDict.items(),
