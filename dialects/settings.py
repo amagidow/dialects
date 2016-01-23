@@ -35,6 +35,10 @@ INSTALLED_APPS = (
   ,'django_jinja'
 )
 
+if LOCAL_INSTALLED_APPS: #Allows for having extra apps installed only on one of the servers
+    INSTALLED_APPS = INSTALLED_APPS + LOCAL_INSTALLED_APPS
+
+
 
 
 ROOT_URLCONF = 'dialects.urls'

@@ -339,5 +339,24 @@ def permissionwrapper(user=None, export = False):
     return queryreturn
 
 
+IPAtoWADSingle = {
+    'ʔ' : 'ʾ',
+    'ð' : 'ḏ',
+    'θ' : 'ṯ',
+    'ʒ' : 'ž',
+    'ː' : '\u0304', #second character is combining macron U+0304
+    'ħ' : 'ḥ',
+    'x' : 'ḫ', #they may use x?
+    'ˤ' : '\u0323', #\u0323 is combining dot below - this should cover all emphatics
+    'ɣ' : 'ġ',
+    'ɡ' : 'g', #IPA g character to normal g
+    'ʕ' : 'ʿ'
+}
+
+IPAtoWADDouble = {
+        'dʒ' : 'ǧ',
+        'tʃ' : 'č'
+}
+
 
 

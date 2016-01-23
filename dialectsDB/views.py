@@ -353,3 +353,6 @@ def bibliolistview(request):
 
 def aboutview(request):
     return render(request, 'about.html', {'pageTitle' : 'About', 'paradigmDict': paradigmDict.items()})
+
+def versionview(request):
+    return render(request, 'versions.html', {'pageTitle' : 'Changes and Versions', 'paradigmDict': paradigmDict.items()})

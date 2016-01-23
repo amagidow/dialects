@@ -34,7 +34,7 @@ class LanguageDatum(models.Model):
     dialect = models.ForeignKey('Dialect')
     #source = models.ForeignKey('SourceIndex')#This is too normalized and annoying to deal with, replaced it with direct fields below
     sourceDoc = models.ForeignKey('BiblioEntryBibTex', null=True)
-    sourceLocation = models.TextField('location of datum in page or map number (p. or m. XX)', null=True)
+    sourceLocation = models.TextField('location of datum in page or map number (p. or m. XX)', null=True, blank=True)
     contributor = models.ForeignKey('Contributor') #once logged in, all activity will be related to contributors, or when data is imported.
     PERMISSION_TYPES = (
         ('Public', 'Fully public'),
@@ -132,7 +132,7 @@ class Contributor(models.Model):
     defaultLanguage = models.CharField("default language used for glosses", max_length = 5, choices=LANGUAGES)
     collaborators = models.ManyToManyField('self',"collaborators who can view your private data",
                                            help_text="note that this is NOT a symmetrical relationship- by making someone a collaborator, you are not able to see their private data",
-                                           symmetrical=False)
+                                           symmetrical=False, blank=True)
     class Meta:
         app_label = 'dialectsDB'
     def __str__(self):

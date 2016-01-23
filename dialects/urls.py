@@ -36,6 +36,7 @@ urlpatterns = patterns('',
     url('^index.html$', aboutview),
     url(r'^$', aboutview),
     url(r'^about.html$', aboutview),
+    url(r'^versions.html$', versionview),
     url(r'^mapcsv/', csvMap),
 
     #url(r'^autocomplete/', include('autocomplete_light.urls')) #required by autocomplete
