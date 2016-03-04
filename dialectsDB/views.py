@@ -251,6 +251,114 @@ def searchMultiType(request, type="map"):
                                                      'searchquery': searchquery})
 
 
+
+def mapPageSearch(request):
+    """
+    This view handles either map or list-style searches, since they are almost identical. Type is passed via the URLConfig
+    :param request: HTTP request
+    :param type: String, either `map` or `list`, handled by URLConfig
+    :return: render of `searchMulti.html`
+    """
+    searchForms = formset_factory(NonModelSearchFormColor)
+    #initializing for scope
+    searchquery = ''
+    targetPage = ""
+    pagetitle = ""
+    results = ''
+    if request.user.is_authenticated(): #If there's a user to get, make contributor equal to that user
+        contributor = Contributor.objects.get(user=request.user)
+    else: #If not, it's null, will get passed to permission functions as null.
+        contributor = None
+    if type == "map":
+        targetPage = "/leafletmap/"
+        pagetitle = "Map Search"
+        csvLink = "/mapcsv/"
+    elif type == "list":
+        targetPage = "/tableview/"
+        pagetitle = "List Search"
+        csvLink = ""
+        results = '[]'
+    sq = ''
+    #This need not be done with POST (no privacy concerns) but GET was causing problems with initial page loads giving "required" errors
+    if request.method == "POST":
+        searchresults = searchForms(request.POST, request.FILES, prefix='ms')
+        #request.session['output'] = 'GotToPost'
+        if searchresults.is_valid():
+            formResults = []
+            markers = []
+            csvMarkers = []
+            #print(searchresults)
+            for form in searchresults:
+                #These lines do the actual processing
+                formTuple = searchLanguageDatumColor(form.cleaned_data, request.user) #Passing it the cleaned data, NOT the request
+                formResults.append(formTuple)
+                #These lines just create a small blurb under the search form
+                wordSearchText = form.cleaned_data['wordSearch']
+                glossSearchText = form.cleaned_data['glossSearch']
+                annotSearchText = form.cleaned_data['annotationSearch']
+                tagSearchText = form.cleaned_data['tagSearch']
+                color = form.cleaned_data['colorinput']
+                sq += "Color: {} Word: {} Gloss: {} Annotation:{} Tags: {}\n".format(
+                    color, wordSearchText, glossSearchText, annotSearchText, tagSearchText)
+                #print("FormTuple:{}".format(formTuple))
+            searchquery = sq
+            #Sort the results by color before grouping
+            formResults.sort(key=lambda x: x[1])
+            #Iterate through color groups
+            for key, group in groupby(formResults, lambda x: x[1]):
+                #print("Key: {}, Group:{}".format(key,group))
+                groupcolor = key #I think this is right
+                finalqueryset = None
+                dialectQS = None
+                first = True
+                #print("Group:{})".format(group))
+                for member in group:
+                    #print(member)
+                    if first == True:
+                        dialectQS = Dialect.objects.filter(languagedatum__in=member[0])
+                        finalqueryset = member[0]
+                        #print("Finalquery set1: {}".format(str(finalqueryset).encode('ascii', errors='backslashreplace')))
+                        first= False
+                    else:
+                        dialectQS = dialectQS & Dialect.objects.filter(languagedatum__in=member[0]) #only AND the dialects, not the data itself
+                        finalqueryset = finalqueryset.distinct() | member[0].distinct() #combine results, the ANDing happens at the level of the dialect
+                #This has to be after all the member functions are over, outside of that loop, otherwise the QS actions are pointless
+                finalqueryset = finalqueryset.filter(dialect__in=dialectQS)
+                markers += generateMarkers((finalqueryset,groupcolor)) #Up to here works for both map and list
+
+                #Doing permissions manually here, this is not the best way to do things but works for now
+                if type=="map":
+                    colorQS = finalqueryset.filter(contributor=contributor) | finalqueryset.exclude(contributor=contributor).exclude(permissions__contains="NoE") #This will also exclude things from the user - need to fix it
+                    csvMarkers += generateMarkers((colorQS.distinct(), groupcolor))
+            #print("Markers: {}".format(markers))
+            #print(finalqueryset)
+            serialized = []
+            csvserialized = []
+            if type=="map":
+                markers = cleanupMarkers(markers)
+                for myobject in markers:
+                    serialized.append(geojson.dumps(myobject))
+                for myobject in csvMarkers:
+                    csvserialized.append(myobject.csvserialized)
+                serialized = ",".join(serialized)
+                #print(serialized)
+                results = serialized
+                request.session['csvout'] = "\n".join(csvserialized) #This is manually cleaned of PubNoE data
+                request.session['csvheader'] = "Dialect,Color,Lat,Long" # "self.dialectname, self.color, self.geomLat, self.geomLong"
+            elif type=="list":
+                arraylist = [x.dtarray for x in markers]
+                resultsformatted = json.dumps(arraylist)
+                results = resultsformatted
+        return render(request, 'searchMulti.html', {'pageTitle': pagetitle, 'paradigmDict': paradigmDict.items(),
+                                                     'dataFormset': searchresults, 'targetPage' : targetPage, 'initialSource': targetPage,
+                                                     'csvlink' : csvLink, 'results' : results, 'searchquery' : searchquery}) #searchresults has to be passed to retain data
+    else:
+        #results = ""
+        searchForms = searchForms(prefix='ms')
+        return render(request, 'searchMulti.html', {'pageTitle': pagetitle, 'paradigmDict': paradigmDict.items(),  'dataFormset': searchForms,
+                                                     'targetPage' : targetPage, 'initialSource': targetPage, 'csvlink': csvLink, 'results': results,
+                                                     'searchquery': searchquery})
+
 def crossSearchView(request):
     """
     This view generates a implicational-type search where the results from one search are collated against an infinite number of secondary searches

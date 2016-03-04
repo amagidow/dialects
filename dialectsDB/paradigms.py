@@ -1,6 +1,8 @@
 __author__ = 'Alex'
 from dialectsDB.models import LanguageDatum
 from dialectsDB import utilityfuncs
+
+
 class TableAxis(object):
     def __init__(self, headername, headertags, uniqueID = False,subheaders=[], relatedTo=False, relatedHow = ""):
         self.headername = headername #This is identical to "GLOSS" in the processing function - must be unique - so subheaders must inherit from headers
@@ -147,7 +149,10 @@ interrogatives = StructuredTable(paradigmname="Interrogatives", glosslang="en", 
                 columns=[
                     TableAxis("General", ""),
                     TableAxis("Masculine", "masculine"),
-                    TableAxis("Feminine", "feminine")
+                    TableAxis("Feminine", "feminine"),
+                    TableAxis("Masculine Plural", ["plural", "masculine"]),
+                    TableAxis("Feminine Plural", ["plural", "feminine"])
+
                 ],
                 rows=[
                     TableAxis("Who","interr.who"),
@@ -167,10 +172,14 @@ interrogatives = StructuredTable(paradigmname="Interrogatives", glosslang="en", 
                     "interr.who": "Who",
                     "interr.who_masculine": "Who (m)",
                     "interr.who_feminine": "Who (f)",
+                    "interr.who_masculine_plural": "Who (mp)",
+                    "interr.who_feminine_plural": "Who (fp)",
 
                     "interr.what": "What",
                     "interr.what_masculine": "What (m)",
                     "interr.what_feminine": "What (f)",
+                    "interr.what_masculine_plural": "What (mp)",
+                    "interr.what_feminine_plural": "What (fp)",
 
                     "interr.when": "When",
 
@@ -196,6 +205,8 @@ interrogatives = StructuredTable(paradigmname="Interrogatives", glosslang="en", 
                     "interr.which": "Which",
                     "interr.which_masculine": "Which (m)",
                     "interr.which_feminine": "Which (f)",
+                    "interr.which_masculine_plural": "Which (mp)",
+                    "interr.which_feminine_plural": "Which (fp)",
 
                     "interr.polar": "Interrogative Particle",
 
