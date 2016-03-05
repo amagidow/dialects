@@ -361,7 +361,8 @@ def mapPageSearch(request):
 
 def crossSearchView(request):
     """
-    This view generates a implicational-type search where the results from one search are collated against an infinite number of secondary searches
+    This view generates a implicational-type search where the results from one search are collated against an infinite number of secondary searches.
+    If a criterion isn't met for the secondary searches, nothing shows up - which could indicated either no data at all, or no data matching the criterion.
     :param request:
     :return:
     """

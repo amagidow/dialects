@@ -93,11 +93,11 @@ pronounsuffixes = StructuredTable(paradigmname="Pronoun Suffixes", glosslang="en
                ],
                rows= [
                    TableAxis("1st Person","1st-person"),
-                   TableAxis("2nd Person","2nd-person", subheaders=[
+                   TableAxis("2nd Person","person.2", subheaders=[
                        TableAxis("Masculine", "masculine"),
                        TableAxis("Feminine", "feminine")
                    ]),
-                   TableAxis("3rd Person","3rd-person", subheaders=[
+                   TableAxis("3rd Person","person.3", subheaders=[
                        TableAxis("Masculine", "masculine"),
                        TableAxis("Feminine", "feminine")
                    ]),
@@ -106,14 +106,14 @@ pronounsuffixes = StructuredTable(paradigmname="Pronoun Suffixes", glosslang="en
                glosses={#underscore connected tag lists, but will be alphabetized so always works the same
                    "singular_1st-person" : "My",
                    "plural_1st-person" : "Our",
-                   "singular_2nd-person_masculine" : "Your (m.)",
-                   "singular_2nd-person_feminine" : "Your (f.)",
-                   "plural_2nd-person_masculine" : "You all's (m.)",
-                   "plural_2nd-person_feminine" : "You all's (f.)",
-                   "singular_3rd-person_masculine" : "His",
-                   "singular_3rd-person_feminine" : "Her",
-                   "plural_3rd-person_masculine" : "Their (m.)",
-                   "plural_3rd-person_feminine" : "Their (f.)",
+                   "singular_person.2_masculine" : "Your (m.)",
+                   "singular_person.2_feminine" : "Your (f.)",
+                   "plural_person.2_masculine" : "You all's (m.)",
+                   "plural_person.2_feminine" : "You all's (f.)",
+                   "singular_person.3_masculine" : "His",
+                   "singular_person.3_feminine" : "Her",
+                   "plural_person.3_masculine" : "Their (m.)",
+                   "plural_person.3_feminine" : "Their (f.)",
                         }
                 )
 independentpronouns = StructuredTable(paradigmname="Independent Pronouns",  glosslang="en", sharedtags= ['closed-class', 'pronoun.independent'],
@@ -123,11 +123,11 @@ independentpronouns = StructuredTable(paradigmname="Independent Pronouns",  glos
                ],
                 rows = [
                    TableAxis("1st Person","1st-person"),
-                   TableAxis("2nd Person","2nd-person", subheaders=[
+                   TableAxis("2nd Person","person.2", subheaders=[
                        TableAxis("Masculine", "masculine"),
                        TableAxis("Feminine", "feminine")
                    ]),
-                   TableAxis("3rd Person","3rd-person", subheaders=[
+                   TableAxis("3rd Person","person.3", subheaders=[
                        TableAxis("Masculine", "masculine"),
                        TableAxis("Feminine", "feminine")
                    ]),
@@ -135,14 +135,14 @@ independentpronouns = StructuredTable(paradigmname="Independent Pronouns",  glos
                glosses={
                    "singular_1st-person" : "I",
                    "plural_1st-person" : "We",
-                   "singular_2nd-person_masculine" : "You (m.)",
-                   "singular_2nd-person_feminine" : "You (f.)",
-                   "plural_2nd-person_masculine" : "You all (m.)",
-                   "plural_2nd-person_feminine" : "You all (f.)",
-                   "singular_3rd-person_masculine" : "He",
-                   "singular_3rd-person_feminine" : "She",
-                   "plural_3rd-person_masculine" : "They (m.)",
-                   "plural_3rd-person_feminine" : "They (f.)",
+                   "singular_person.2_masculine" : "You (m.)",
+                   "singular_person.2_feminine" : "You (f.)",
+                   "plural_person.2_masculine" : "You all (m.)",
+                   "plural_person.2_feminine" : "You all (f.)",
+                   "singular_person.3_masculine" : "He",
+                   "singular_person.3_feminine" : "She",
+                   "plural_person.3_masculine" : "They (m.)",
+                   "plural_person.3_feminine" : "They (f.)",
                })
 
 interrogatives = StructuredTable(paradigmname="Interrogatives", glosslang="en", sharedtags=['closed-class'],
@@ -270,4 +270,54 @@ demonstratives = StructuredTable(paradigmname="Demonstratives",  glosslang="en",
 
                     })
 
-paradigmDict = {'independentpronouns': independentpronouns, 'pronounsuffixes': pronounsuffixes, 'interrogatives': interrogatives, 'demonstratives': demonstratives} #Need to keep paradigms in here
+#Verbal suffixes: Want suffixes only, for sound verbs
+pastverbsuffixes = StructuredTable(paradigmname="Past Tense Verb Suffixes", glosslang="en", sharedtags=['closed-class', 'tense.past', 'affix.verbal', 'suffix'],
+                columns=[
+                    TableAxis("Sound Verbs", "verb.sound"),
+                    #TableAxis("IIIw", "verb.IIIw"),
+                    #TableAxis("IIIy", "verb.IIIy"),
+                    #TableAxis("Geminate", "verb.geminate")
+
+                ],
+                rows=[
+                   TableAxis("First Person","person.1", subheaders=[
+                       TableAxis("Singular", "singular"),
+                       TableAxis("Plural", "plural")
+                   ]),
+                    TableAxis("2nd Singular",["person.2","singular"], subheaders=[
+                        TableAxis("Masculine", ["masculine"]),
+                        TableAxis("Feminine", ["feminine"]),
+
+                   ]), #There seems to be a bug that I can only have two items per row
+                    TableAxis("2nd Plural", ["person.2","plural"], subheaders=[
+                        TableAxis("Masculine", ["masculine"]),
+                        TableAxis("Feminine", ["feminine"]),
+                             ]),
+                    TableAxis("3rd Singular",["person.3","singular"], subheaders=[
+                        TableAxis("Masculine", ["masculine"]),
+                        TableAxis("Feminine", ["feminine"]),
+
+                   ]),
+                    TableAxis("3rd Plural", ["person.3","plural"], subheaders=[
+                        TableAxis("Masculine", ["masculine"]),
+                        TableAxis("Feminine", ["feminine"]),
+                             ]),
+                ],
+                glosses={
+                    "person.1_singular_verb.sound": "1s Sound Verb Suffix",
+                    "person.1_plural_verb.sound": "1p Sound Verb Suffix",
+
+                    "person.2_singular_masculine_verb.sound" : "2ms Sound Verb Suffix",
+                    "person.2_singular_feminine_verb.sound" : "2fs Sound Verb Suffix",
+
+                    "person.2_plural_masculine_verb.sound" : "2mp Sound Verb Suffix",
+                    "person.2_plural_feminine_verb.sound" : "2fp Sound Verb Suffix",
+
+                    "person.3_singular_masculine_verb.sound" : "3ms Sound Verb Suffix",
+                    "person.3_singular_feminine_verb.sound" : "3fs Sound Verb Suffix",
+
+                    "person.3_plural_masculine_verb.sound" : "3mp Sound Verb Suffix",
+                    "person.3_plural_feminine_verb.sound" : "3fp Sound Verb Suffix",
+                }
+                )
+paradigmDict = {'verbsuffixes' : pastverbsuffixes,  'independentpronouns': independentpronouns, 'pronounsuffixes': pronounsuffixes, 'interrogatives': interrogatives, 'demonstratives': demonstratives} #Need to keep paradigms in here
