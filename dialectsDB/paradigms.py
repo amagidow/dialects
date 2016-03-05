@@ -92,7 +92,7 @@ pronounsuffixes = StructuredTable(paradigmname="Pronoun Suffixes", glosslang="en
                    ]),
                ],
                rows= [
-                   TableAxis("1st Person","1st-person"),
+                   TableAxis("1st Person","person.1"),
                    TableAxis("2nd Person","person.2", subheaders=[
                        TableAxis("Masculine", "masculine"),
                        TableAxis("Feminine", "feminine")
@@ -104,8 +104,8 @@ pronounsuffixes = StructuredTable(paradigmname="Pronoun Suffixes", glosslang="en
                ],
                 #In this case, it's very inconvenient to have different glosses for different super-headers
                glosses={#underscore connected tag lists, but will be alphabetized so always works the same
-                   "singular_1st-person" : "My",
-                   "plural_1st-person" : "Our",
+                   "singular_person.1" : "My",
+                   "plural_person.1" : "Our",
                    "singular_person.2_masculine" : "Your (m.)",
                    "singular_person.2_feminine" : "Your (f.)",
                    "plural_person.2_masculine" : "You all's (m.)",
@@ -122,7 +122,7 @@ independentpronouns = StructuredTable(paradigmname="Independent Pronouns",  glos
                     TableAxis("Plural", "plural")
                ],
                 rows = [
-                   TableAxis("1st Person","1st-person"),
+                   TableAxis("1st Person","person.1"),
                    TableAxis("2nd Person","person.2", subheaders=[
                        TableAxis("Masculine", "masculine"),
                        TableAxis("Feminine", "feminine")
@@ -133,8 +133,8 @@ independentpronouns = StructuredTable(paradigmname="Independent Pronouns",  glos
                    ]),
                 ],
                glosses={
-                   "singular_1st-person" : "I",
-                   "plural_1st-person" : "We",
+                   "singular_person.1" : "I",
+                   "plural_person.1" : "We",
                    "singular_person.2_masculine" : "You (m.)",
                    "singular_person.2_feminine" : "You (f.)",
                    "plural_person.2_masculine" : "You all (m.)",
@@ -271,7 +271,7 @@ demonstratives = StructuredTable(paradigmname="Demonstratives",  glosslang="en",
                     })
 
 #Verbal suffixes: Want suffixes only, for sound verbs
-pastverbsuffixes = StructuredTable(paradigmname="Past Tense Verb Suffixes", glosslang="en", sharedtags=['closed-class', 'tense.past', 'affix.verbal', 'suffix'],
+pastverbsuffixes = StructuredTable(paradigmname="Past Tense Verb Suffixes", glosslang="en", sharedtags=['closed-class', 'verb.suffixform', 'affix.verbal', 'suffix'],
                 columns=[
                     TableAxis("Sound Verbs", "verb.sound"),
                     #TableAxis("IIIw", "verb.IIIw"),

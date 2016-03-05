@@ -10,8 +10,7 @@ Relatively Trivial
 Basic Web Tasks
 ^^^^^^^^^^^^^^^
 - Add users guide
-- Add links to github from About page
-- Fix jinja page login bug (pages that use Jinja think anonymous users are logged in)
+
 
 Login and Authentication
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -33,16 +32,24 @@ Backend
     * Add Arabic characters as possible normalizedInput, along with search?
 - Create mechanism for checking for near-duplicate data
 
+Bugs and small issues
+^^^^^^^^^^^^^^^^^^^^^
+- Only show tags that are relevant to a given logged in user (in forms.py)
+- Find a way to show whether data is missing or does not fit the criteria in the cross-search secondary searches (currently both show blanks)
+
 Somewhat complex
 ################
 Views
 ^^^^^
-- Develop view that allows for entering both raw data, and glosses, but which does tagging/relationships behind the scenes. 
+- Develop view that allows for entering both raw data, and glosses, but which does tagging/relationships behind the scenes.
+- Develop dictionary style view
 
 Backend
 ^^^^^^^
 - Develop workaround to Hstore search bug/function (https://code.djangoproject.com/ticket/25021)
 - Develop parser for gloss-type views
+- Rewrite map search export to use AJAX-type model
+    * Ensure permissions are respected, and users cannot view source to steal data
 
 Extremely complex
 ##################
