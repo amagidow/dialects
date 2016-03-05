@@ -1,6 +1,7 @@
 __author__ = 'Alex'
 from dialectsDB.models import LanguageDatum
 from dialectsDB import utilityfuncs
+from collections import OrderedDict
 
 
 class TableAxis(object):
@@ -320,4 +321,6 @@ pastverbsuffixes = StructuredTable(paradigmname="Past Tense Verb Suffixes", glos
                     "person.3_plural_feminine_verb.sound" : "3fp Sound Verb Suffix",
                 }
                 )
-paradigmDict = {'verbsuffixes' : pastverbsuffixes,  'independentpronouns': independentpronouns, 'pronounsuffixes': pronounsuffixes, 'interrogatives': interrogatives, 'demonstratives': demonstratives} #Need to keep paradigms in here
+paradigmDict = {'pastverbsuffixes' : pastverbsuffixes,  'independentpronouns': independentpronouns, 'pronounsuffixes': pronounsuffixes, 'interrogatives': interrogatives, 'demonstratives': demonstratives} #Need to keep paradigms in here
+#recast this into an OrderedDict sorted by the paradigm's full (display) name
+paradigmDict = OrderedDict(sorted(paradigmDict.items(), key=lambda t: t[1].paradigmname)) #This solves a bug where the list of items changed since it was an unordered dictionary.
