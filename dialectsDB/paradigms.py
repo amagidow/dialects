@@ -272,7 +272,7 @@ demonstratives = StructuredTable(paradigmname="Demonstratives",  glosslang="en",
                     })
 
 #Verbal suffixes: Want suffixes only, for sound verbs
-pastverbsuffixes = StructuredTable(paradigmname="Past Tense Verb Suffixes", glosslang="en", sharedtags=['closed-class', 'verb.suffixform', 'affix.verbal', 'suffix'],
+pastverbsuffixes = StructuredTable(paradigmname="Past Tense Verb Suffixes", glosslang="en", sharedtags=['closed-class', 'verb.suffixform', 'affix.verbal'],
                 columns=[
                     TableAxis("Sound Verbs", "verb.sound"),
                     #TableAxis("IIIw", "verb.IIIw"),
