@@ -31,7 +31,9 @@ class TableAxis(object):
 class StructuredTable(object):
     #If inherit is false, top-level columns (and rows?) are NOT inherited for purposes of glossing- this makes it easier when glosses don't differ
     #If inherit is true, top-level colunns are inherited for purposes of glossing. Look at 'pronoun suffixes' versus 'demonstratives' to understand the difference
-    def __init__(self, paradigmname, sharedtags, columns, rows, glosses, glosslang="en", annotation =True, subcolumns=True,subrows=True, inherit = False):
+    #optionalsharedtags is a list of OrderDicts (key=display name, value = tags (_ separated)) that will be converted into radio buttons that will then act as shared tags.
+    # This allows for multiple overall uses of the same paradigm input, e.g. sound/weak verbs. OrderedDicts required to avoid changing order of options with each refresh
+    def __init__(self, paradigmname, sharedtags, columns, rows, glosses, glosslang="en", annotation =True, subcolumns=True,subrows=True, inherit = False, optionalsharedtags = [], defaultvalue = ''):
         self.paradigmname = paradigmname
         #self.paradigmnid = paradigmid #TIMPORTNANT: his should be identical to the variable name!!!
         self.sharedtags = sharedtags
@@ -41,7 +43,9 @@ class StructuredTable(object):
         self.columns = columns
         self.rows = rows
         self.inherit = inherit #If inherit is false, top-level columns (and rows?) are NOT inherited for purposes of glossing
+        self.optionalsharedtags = optionalsharedtags
         self.glosses = {}
+        self.defaultvalue = defaultvalue #Default value allows for putting in dashes
         for key, value in glosses.items(): #makes all keys alphabetized
             #print("Key: {}, value: {}".format(key, value))
             newKey = list(filter(None,key.split("_")))
@@ -79,7 +83,7 @@ class StructuredTable(object):
         return myQuery
 
 
-pronounsuffixes = StructuredTable(paradigmname="Pronoun Suffixes", glosslang="en", sharedtags= ['closed-class', 'pronoun.suffix'],
+pronounsuffixes = StructuredTable(paradigmname="Pronoun Suffixes", glosslang="en", sharedtags= ['closed-class', 'pronoun.suffix'], defaultvalue= "-",
                 columns= [
                    TableAxis("Singular","singular",subheaders=[
                        TableAxis("C__","cond.C-"), #For relationships,if we restrict to subheaders, we only need to know the appropriate subheader to find and we can figure out tags from there
@@ -272,53 +276,40 @@ demonstratives = StructuredTable(paradigmname="Demonstratives",  glosslang="en",
                     })
 
 #Verbal suffixes: Want suffixes only, for sound verbs
-pastverbsuffixes = StructuredTable(paradigmname="Past Tense Verb Suffixes", glosslang="en", sharedtags=['closed-class', 'verb.suffixform', 'affix.verbal'],
+pastverbsuffixes = StructuredTable(paradigmname="Past Tense Verb Suffixes", glosslang="en", sharedtags=['closed-class', 'verb.suffixform', 'affix.verbal'], defaultvalue="-",
+                optionalsharedtags = [OrderedDict([('Sound Verb','verb.sound'), ('Geminate Verb','verb.geminate'), ('Third Weak Verb', 'verb.IIIweak')])],
                 columns=[
-                    TableAxis("Sound Verbs", "verb.sound"),
-                    #TableAxis("IIIw", "verb.IIIw"),
-                    #TableAxis("IIIy", "verb.IIIy"),
-                    #TableAxis("Geminate", "verb.geminate")
-
+                    TableAxis("Singular", "singular"),
+                    TableAxis("Plural", "plural")
                 ],
                 rows=[
-                   TableAxis("First Person","person.1", subheaders=[
-                       TableAxis("Singular", "singular"),
-                       TableAxis("Plural", "plural")
-                   ]),
-                    TableAxis("2nd Singular",["person.2","singular"], subheaders=[
-                        TableAxis("Masculine", ["masculine"]),
-                        TableAxis("Feminine", ["feminine"]),
-
-                   ]), #There seems to be a bug that I can only have two items per row
-                    TableAxis("2nd Plural", ["person.2","plural"], subheaders=[
-                        TableAxis("Masculine", ["masculine"]),
-                        TableAxis("Feminine", ["feminine"]),
-                             ]),
-                    TableAxis("3rd Singular",["person.3","singular"], subheaders=[
+                   TableAxis("First","person.1"),
+                    TableAxis("Second",["person.2"], subheaders=[
                         TableAxis("Masculine", ["masculine"]),
                         TableAxis("Feminine", ["feminine"]),
 
                    ]),
-                    TableAxis("3rd Plural", ["person.3","plural"], subheaders=[
+                    TableAxis("Third",["person.3"], subheaders=[
                         TableAxis("Masculine", ["masculine"]),
                         TableAxis("Feminine", ["feminine"]),
-                             ]),
-                ],
+
+                   ]),
+                ], #Need to find a way to append the information to the gloss? Maybe not?
                 glosses={
-                    "person.1_singular_verb.sound": "1s Sound Verb Suffix",
-                    "person.1_plural_verb.sound": "1p Sound Verb Suffix",
+                    "person.1_singular": "1s Verb Suffix",
+                    "person.1_plural": "1p Verb Suffix",
 
-                    "person.2_singular_masculine_verb.sound" : "2ms Sound Verb Suffix",
-                    "person.2_singular_feminine_verb.sound" : "2fs Sound Verb Suffix",
+                    "person.2_singular_masculine" : "2ms Verb Suffix",
+                    "person.2_singular_feminine" : "2fs Verb Suffix",
 
-                    "person.2_plural_masculine_verb.sound" : "2mp Sound Verb Suffix",
-                    "person.2_plural_feminine_verb.sound" : "2fp Sound Verb Suffix",
+                    "person.2_plural_masculine" : "2mp Verb Suffix",
+                    "person.2_plural_feminine" : "2fp Verb Suffix",
 
-                    "person.3_singular_masculine_verb.sound" : "3ms Sound Verb Suffix",
-                    "person.3_singular_feminine_verb.sound" : "3fs Sound Verb Suffix",
+                    #"person.3_singular_masculine_verb.sound" : "3ms Sound Verb Suffix",
+                    "person.3_singular_feminine" : "3fs Verb Suffix",
 
-                    "person.3_plural_masculine_verb.sound" : "3mp Sound Verb Suffix",
-                    "person.3_plural_feminine_verb.sound" : "3fp Sound Verb Suffix",
+                    "person.3_plural_masculine" : "3mp Verb Suffix",
+                    "person.3_plural_feminine" : "3fp Verb Suffix",
                 }
                 )
 paradigmDict = {'pastverbsuffixes' : pastverbsuffixes,  'independentpronouns': independentpronouns, 'pronounsuffixes': pronounsuffixes, 'interrogatives': interrogatives, 'demonstratives': demonstratives} #Need to keep paradigms in here

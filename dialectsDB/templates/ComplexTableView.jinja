@@ -1,6 +1,7 @@
 {% extends "baseJQ.html" %}
 {% block head %}
 <script type="text/javascript" charset= "utf8" src="{{ STATIC_URL }}myautocomplete.js"></script>
+    <script type="text/javascript" charset= "utf8" src="{{ STATIC_URL }}complexviewselector.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -14,6 +15,25 @@
     <table class="ui-widget" style="font-size: 1em;">
 {{ dialectForm|safe }}
         </table>
+        {% for paradigmkey, singparadigm in paradigmDict -%}
+               {% if  singparadigm.optionalsharedtags -%}
+                {% set radioset = 0 %}
+                {% for optionset in singparadigm.optionalsharedtags %}
+                {% set firstradio = True %}
+                <div class = 'radioset' name = "{{ paradigmkey }}RS" style = "display:none">
+                    {% for key, value in optionset.items() %}
+                        <input type = "radio" name = "optionsset{{ radioset }} " value = {{ value }}
+                                {% if firstradio -%}
+                        checked = "checked" {% set firstradio = False -%}{% endif -%}
+                        disabled > {{ key }}
+                    {% endfor %}
+                    {% set radioset = radioset + 1 %}
+                </div>
+                {% endfor %}
+            {% endif -%}
+        {% endfor -%}
+
+
 <input type="submit" form="dialectForm">
 </form>
 
@@ -24,7 +44,7 @@
 
 {% macro cellaction(cellglosstags, cellalltags, relatetags = '') -%}
 
-    {% set allTags = cellalltags+cellglosstags+dataStruct.sharedtags %}
+    {% set allTags = cellalltags+cellglosstags+dataStruct.sharedtags+inparadigmtags %} {# This is where I need to add within paradigm tags #}
     {% set myQuery = dataStruct.getDatumsFromTags(currentDialect,allTags, request.user) %} {# Need to add permission function here #}
     {% set entryString = [] %}
     {% set annotString = [] %}

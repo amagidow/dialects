@@ -99,10 +99,14 @@ def complexTableInput(request,paradigmname,toggleAnnot="A"):
         #for each piece of linguistic data, create a list of dictionaries. Each dictionary should contain: "datum", "gloss", "annotation", "tags" (as list?), "relationships"
         #Relationships: what should they point at? They should point at datum I guess, but only one of them
         if dialectForm.is_valid():
+            #Radio button based shared tags need to be added here
+            radiosharedtags = [value.split("_") for key, value in querydata.items() if "optionsset" in key]
+            radiosharedtags = [item for sublist in radiosharedtags for item in sublist] #Flattens out list in case there are lists of lists due to the split command above
+            sharedTags = sharedTags + radiosharedtags
             initialObject = dialectForm.save(commit=False)
             initialObject.contributor = contributor
             inputlanguage = retrievedParadigm.glosslang
-            combinedDict = processInputForm(sharedTags, querydata)
+            combinedDict = processInputForm(sharedTags, querydata, retrievedParadigm.defaultvalue)
             datumsToObjs(initialObject,combinedDict)
         return render(request, 'ComplexTableInput.jinja', {'pageTitle': retrievedParadigm.paradigmname,'paradigmDict': paradigmDict.items(),  'output': combinedDict, 'dialectForm': dialectForm, 'dataStruct': retrievedParadigm})
     else:
@@ -126,6 +130,7 @@ def complexTableView(request):
     retrievedParadigm = paradigmDict['independentpronouns'] #random default since something needs to be passed
     if request.method == 'POST':
         dialectForm = ParadigmSearchForm(request.POST, request.FILES)
+        querydata = request.POST.copy()
         if dialectForm.is_valid():
             result = dialectForm.cleaned_data
             #dialects = list(filter(None, result.get("dialectSearch").split(",")))
@@ -133,10 +138,18 @@ def complexTableView(request):
             #print("DialectsCleaned: {}".format(dialects))
             paradigmname = result.get("paradigm")
             retrievedParadigm = paradigmDict[paradigmname]
-            return render(request, 'ComplexTableView.jinja', {'pageTitle': retrievedParadigm.paradigmname, 'paradigmDict': paradigmDict.items(),'dataStruct': retrievedParadigm, 'dialectForm': dialectForm, 'dialectList' : dialects})
+            #add in section here to retrieve within paradigm tags, then add another variable to export it out to the render request as a separate variable
+            radiosharedtags = [value.split("_") for key, value in querydata.items() if "optionsset" in key]
+            radiosharedtags = [item for sublist in radiosharedtags for item in sublist] #Flattens out list in case there are lists of lists due to the split command above
+            print("Radio shared tags:")
+            print(radiosharedtags)
+            #print(radiosharedtags)
+            return render(request, 'ComplexTableView.jinja', {'pageTitle': retrievedParadigm.paradigmname, 'paradigmDict': paradigmDict.items(),'dataStruct': retrievedParadigm,
+                                                              'dialectForm': dialectForm, 'dialectList' : dialects, 'inparadigmtags' : radiosharedtags })
     else:
         dialectForm = ParadigmSearchForm()
-    return render(request, 'ComplexTableView.jinja', {'pageTitle': retrievedParadigm.paradigmname, 'paradigmDict': paradigmDict.items(),'dataStruct': retrievedParadigm, 'dialectForm': dialectForm, 'dialectList' : []})
+    return render(request, 'ComplexTableView.jinja', {'pageTitle': retrievedParadigm.paradigmname, 'paradigmDict': paradigmDict.items(),'dataStruct': retrievedParadigm,
+                                                      'dialectForm': dialectForm, 'dialectList' : [], 'inparadigmtags' : []})
 
 
 

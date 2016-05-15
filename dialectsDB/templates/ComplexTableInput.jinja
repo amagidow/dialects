@@ -23,7 +23,7 @@
 {% if relatetags -%}
      {% set cellID = relatedtags + ">" + subcol.relatedHow + "|" + cellID -%}
 {% endif -%}
-  <td><input type = "text" id = "*{{ cellID|safe }}" name = "*{{ cellID|safe }}"></td>
+  <td><input type = "text" id = "*{{ cellID|safe }}" name = "*{{ cellID|safe }}" value={{ dataStruct.defaultvalue }}></td>
 {% if dataStruct.annotation -%}
     {% set annotationID = "*annotation|" + cellID %}
     <td><textarea rows = "1" cols="20" id = "{{ annotationID|safe }}" name = "{{ annotationID|safe }}"></textarea></td>
@@ -41,12 +41,35 @@
 
     <form name="complexform" id="complexform" method = "POST">
 <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
         <div>
           {{ dialectForm|safe }}
     </div>
+            <div>
      <input type="submit" value="Submit" />
+            </div>
+
+             {% if  dataStruct.optionalsharedtags -%}
+                        <div>
+                {% set radioset = 0 %}
+                {% for optionset in dataStruct.optionalsharedtags %}
+                {% set firstradio = True %}
+                <div class = 'radioset'>
+                    {% for key, value in optionset.items() %}
+                        <input type = "radio" name = "optionsset{{ radioset }} " value = {{ value }}
+                                {% if firstradio -%}
+                        checked = "checked" {% set firstradio = False -%}{% endif -%}
+                        > {{ key }}
+                    {% endfor %}
+                    {% set radioset = radioset + 1 %}
+                </div>
+                {% endfor %}
+                        </div>
+            {% endif -%}
+
 
 {% include "ComplexTableOnly.jinja" %}
+
 </form>
 
 {% endblock %}

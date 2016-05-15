@@ -114,7 +114,7 @@ def addTagstoLanguageDatum(languagedatum,tags): #tags is a list
     #For relationship columns, the annotation column would be annotation|relatedHeader>relationship|gloss:tags_separated_by_underscores
     #relationship should look like: header>relationship| - but we could have identical glosses, e.g. -ii, -ya
     #The nature of the relationship could just be whatever is before the | separated by _ ??
-def processInputForm(sharedTags, querydata):
+def processInputForm(sharedTags, querydata, defaultvalue=""):
     combinedDict = []
     for key, value in querydata.items():
         if "*" in key and "annotation" not in key: #asterisks skip data from other forms!
@@ -132,9 +132,10 @@ def processInputForm(sharedTags, querydata):
                     annotation = querydata.get("*annotation|"+key, "") #this works, what about variants?
                     value = splitDatums(value) #should return just a single item if there's no annotation
                     for singleDatum in value: #loops through
-                        datumDict = {"datum" : singleDatum, "annotation" : annotation, "gloss" : gloss, "tags" : alltags,
-                                 "relationship" : {"target" : headerRelated, "reltag" : relationship}, "orighead": key}
-                        combinedDict.append(datumDict)
+                        if singleDatum is not defaultvalue:#This makes sure we're not submitting default values like hyphens along with actual data
+                            datumDict = {"datum" : singleDatum, "annotation" : annotation, "gloss" : gloss, "tags" : alltags,
+                                     "relationship" : {"target" : headerRelated, "reltag" : relationship}, "orighead": key}
+                            combinedDict.append(datumDict)
                 else:
                     firstsplit = key.split(":")
                     gloss =  firstsplit[0] #this allows me to run through this even if it's only one
@@ -143,8 +144,9 @@ def processInputForm(sharedTags, querydata):
                     alltags = sharedTags + individualTags
                     annotation = querydata.get("*annotation|"+key, "") #this works, what about variants?
                     for singleDatum in value:
-                        datumDict = {"datum" : singleDatum, "annotation" : annotation, "gloss" : gloss, "tags" : alltags, "orighead":key}
-                        combinedDict.append(datumDict)
+                        if singleDatum is not defaultvalue: #This makes sure we're not submitting default values like hyphens along with actual data
+                            datumDict = {"datum" : singleDatum, "annotation" : annotation, "gloss" : gloss, "tags" : alltags, "orighead":key}
+                            combinedDict.append(datumDict)
     return combinedDict
 
 class MarkerInfo():#Class for storing information for markers
@@ -300,9 +302,9 @@ def cleanupMarkers(markers):
                     bavg += float(Color(item).get_blue())
                 mainMember.color = Color(rgb=(ravg/len(collectedcolors),gavg/len(collectedcolors),bavg/len(collectedcolors))).get_hex_l()
                 #Do something to blend colors
-        print(mainMember)
+        #print(mainMember)
         newobjectlist.append(mainMember) #once we have its info, we cut it out - IS THIS REALLY ELIMINATING DUPLICATES?
-    print(newobjectlist)
+    #print(newobjectlist)
     return newobjectlist
 
 def removeJustIntag():
@@ -323,11 +325,11 @@ def permissionwrapper(user=None, export = False):
             contributorSet = contrib.contributor_set.all() #Gets all the people who have selected this user as contributors
             #Second clause should get even stuff that is private
             queryreturn = LanguageDatum.objects.filter(permissions__contains="Pub") | LanguageDatum.objects.filter(contributor=contrib)
-            print("qr count 1:{}".format(queryreturn.count()))
+            #print("qr count 1:{}".format(queryreturn.count()))
             for person in contributorSet:
                 print(person)
                 queryreturn = queryreturn | LanguageDatum.objects.filter(contributor=person)
-                print("qr count 2:{}".format(queryreturn.count()))
+                #print("qr count 2:{}".format(queryreturn.count()))
             if export:
                 queryreturn = queryreturn.exclude(permissions__contains="NoE") # if exporting, exclude those not available for export
                 #This will have duplicates, handle later
