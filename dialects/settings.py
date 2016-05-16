@@ -110,6 +110,16 @@ TEMPLATE_CONTEXT_PROCESSORS = ("django.contrib.auth.context_processors.auth",
 'django.core.context_processors.csrf'
                                )
 
+LEAFLET_CONFIG = {
+    'TILES': [('Mapquest', 'http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}',
+               {
+                   'type': 'map',
+	                'ext': 'jpg',
+	                'attribution': 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+	                'subdomains': '1234'
+               })]
+}
+
 LOGIN_REDIRECT_URL = "/about.html"
 
 LANGUAGE_CODE = 'en-us'
