@@ -83,7 +83,7 @@ class StructuredTable(object):
         return myQuery
 
 
-pronounsuffixes = StructuredTable(paradigmname="Pronoun Suffixes", glosslang="en", sharedtags= ['closed-class', 'pronoun.suffix'], defaultvalue= "-",
+pronounsuffixes = StructuredTable(paradigmname="Pronouns - Suffixes", glosslang="en", sharedtags= ['closed-class', 'pronoun.suffix'], defaultvalue= "-",
                 columns= [
                    TableAxis("Singular","singular",subheaders=[
                        TableAxis("C__","cond.C-"), #For relationships,if we restrict to subheaders, we only need to know the appropriate subheader to find and we can figure out tags from there
@@ -121,7 +121,7 @@ pronounsuffixes = StructuredTable(paradigmname="Pronoun Suffixes", glosslang="en
                    "plural_person.3_feminine" : "Their (f.)",
                         }
                 )
-independentpronouns = StructuredTable(paradigmname="Independent Pronouns",  glosslang="en", sharedtags= ['closed-class', 'pronoun.independent'],
+independentpronouns = StructuredTable(paradigmname="Pronouns - Independent",  glosslang="en", sharedtags= ['closed-class', 'pronoun.independent'],
                columns= [
                     TableAxis("Singular","singular"),
                     TableAxis("Plural", "plural")
@@ -276,7 +276,7 @@ demonstratives = StructuredTable(paradigmname="Demonstratives",  glosslang="en",
                     })
 
 #Verbal suffixes: Want suffixes only, for sound verbs
-pastverbsuffixes = StructuredTable(paradigmname="Past Tense Verb Suffixes", glosslang="en", sharedtags=['closed-class', 'verb.suffixform', 'affix.verbal'], defaultvalue="-",
+pastverbsuffixes = StructuredTable(paradigmname="Verb Affixes - Past", glosslang="en", sharedtags=['closed-class', 'verb.suffixform', 'affix.verbal'], defaultvalue="-",
                 optionalsharedtags = [OrderedDict([('Sound Verb','verb.sound'), ('Geminate Verb','verb.geminate'), ('Third Weak Verb', 'verb.IIIweak')])],
                 columns=[
                     TableAxis("Singular", "singular"),
@@ -296,20 +296,20 @@ pastverbsuffixes = StructuredTable(paradigmname="Past Tense Verb Suffixes", glos
                    ]),
                 ], #Need to find a way to append the information to the gloss? Maybe not?
                 glosses={
-                    "person.1_singular": "1s Verb Suffix",
-                    "person.1_plural": "1p Verb Suffix",
+                    "person.1_singular": "1s verb suffix",
+                    "person.1_plural": "1p verb suffix",
 
-                    "person.2_singular_masculine" : "2ms Verb Suffix",
-                    "person.2_singular_feminine" : "2fs Verb Suffix",
+                    "person.2_singular_masculine" : "2ms verb suffix",
+                    "person.2_singular_feminine" : "2fs verb suffix",
 
-                    "person.2_plural_masculine" : "2mp Verb Suffix",
-                    "person.2_plural_feminine" : "2fp Verb Suffix",
+                    "person.2_plural_masculine" : "2mp verb suffix",
+                    "person.2_plural_feminine" : "2fp verb suffix",
 
-                    #"person.3_singular_masculine_verb.sound" : "3ms Sound Verb Suffix",
-                    "person.3_singular_feminine" : "3fs Verb Suffix",
+                    "person.3_singular_masculine" : "3ms verb suffix", #while rare this occurs on geminates in some dialects
+                    "person.3_singular_feminine" : "3fs verb suffix",
 
-                    "person.3_plural_masculine" : "3mp Verb Suffix",
-                    "person.3_plural_feminine" : "3fp Verb Suffix",
+                    "person.3_plural_masculine" : "3mp verb suffix",
+                    "person.3_plural_feminine" : "3fp verb suffix",
                 }
                 )
 paradigmDict = {'pastverbsuffixes' : pastverbsuffixes,  'independentpronouns': independentpronouns, 'pronounsuffixes': pronounsuffixes, 'interrogatives': interrogatives, 'demonstratives': demonstratives} #Need to keep paradigms in here
