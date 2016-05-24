@@ -99,6 +99,14 @@ class LanguageDatum(models.Model):
         headerReturn = "|".join("{}".format(k) for (k,v) in serialData.items())
         return headerReturn
 
+    def stringextra(self, breakchar): #serializing function to return nicely formatted string of additional data
+        serialData = self.myserializer()
+        returnstring = "Datum: {1}{0}Gloss: {2}{0}Annotation: {3}{0}Source: {4}({5}){0}Taglist: {6}".format(
+            breakchar, serialData['normEntry'], serialData['gloss'], serialData['annotation'], serialData['sourceName'],
+            serialData['sourceLoc'], serialData['tagsList']
+        )
+        return returnstring
+
     #wraps Multigloss so that you can easily get a string with the glosses, sorted in order by language but only
     #returns the glosses themselves, not the language tag, e.g. "wo?, where?, ou?"
     def glossesString(self):

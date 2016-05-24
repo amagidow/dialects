@@ -340,7 +340,6 @@ def permissionwrapper(user=None, export = False):
         queryreturn = LanguageDatum.objects.filter(permissions__contains="Pub")
     return queryreturn
 
-
 IPAtoWADSingle = {
     'ʔ' : 'ʾ',
     'ð' : 'ḏ',

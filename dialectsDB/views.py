@@ -404,18 +404,23 @@ def crossSearchView(request):
                     mainsearchtext + searchText(msform.cleaned_data) + "\n"
             finalQS = mainQS.filter(dialect__in=dialectQS)
             headerRows.append("Main:" + mainsearchtext)
-            dialectsList = Dialect.objects.filter(languagedatum__in=finalQS).distinct().order_by('dialectCode')
+            dialectsList = Dialect.objects.filter(languagedatum__in=finalQS).distinct().order_by('dialectCode') #only dialects which 'hit' for main query
             first = True
             columnQSs = [finalQS,]
             for csform in crossresults: #every one of these things is its own search
                 headerRows.append(searchText(csform.cleaned_data))
                 columnQSs.append(searchLanguageDatum(csform.cleaned_data, request.user)) #Each of these queries should include all of the results of these searches
-            for dl in dialectsList:
-                thisRow = [dl.dialectCode, ]
+            for dl in dialectsList: #For every dialect in the list returned, do
+                thisRow = [(dl.dialectCode, dl.dialectNameEn), ]
                 for cqs in columnQSs:
-                    filteredQS = cqs.filter(dialect=dl)
-                    textofQS = ", ".join([x.normalizedEntry for x in filteredQS]) #converts queryset into list, thence into breaklined text
-                    thisRow.append(textofQS)
+                    filteredQS = cqs.filter(dialect=dl) #queryset that only has that dialect per that query
+                    dt = [] #datumtext
+                    et = [] #extratext
+                    for x in filteredQS: #Go through each returned item, add it to the lists
+                        dt.append(x.normalizedEntry)
+                        et.append(x.stringextra("&#013;&#010;"))
+                    #textofQS = (", ".join([x.normalizedEntry for x in filteredQS]), "&#013;&#010;&#013;&#010;".join([x.stringextra("&#013;&#010;") for x in filteredQS])) #converts queryset into list, thence into comma joined text - here is where only the normalized entry is shown
+                    thisRow.append((", ".join(dt),"&#013;&#010;&#013;&#010;".join(et))) #append it as a tupple
                 bodyRows.append(thisRow)
         return render(request, "Cross_search.html", {'pageTitle' : 'Cross Search', 'paradigmDict': paradigmDict.items(), 'mainFormset' : mainresults, 'relatedFormset': crossresults, 'headerRows' : headerRows, 'bodyRows': bodyRows})
     else:
