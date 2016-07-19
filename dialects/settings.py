@@ -111,12 +111,11 @@ TEMPLATE_CONTEXT_PROCESSORS = ("django.contrib.auth.context_processors.auth",
                                )
 
 LEAFLET_CONFIG = {
-    'TILES': [('Mapquest', 'http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.{ext}',
+    'TILES': [('OpenStreetMap.Mapnik', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                {
                    'type': 'map',
-	                'ext': 'jpg',
-	                'attribution': 'Tiles Courtesy of <a href="http://www.mapquest.com/">MapQuest</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-	                'subdomains': '1234'
+	                'attribution': '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'#,
+	                #'subdomains': '1234'
                })]
 }
 
