@@ -87,13 +87,17 @@ pronounsuffixes = StructuredTable(paradigmname="Pronouns - Suffixes", glosslang=
                 columns= [
                    TableAxis("Singular","singular",subheaders=[
                        TableAxis("C__","cond.C-"), #For relationships,if we restrict to subheaders, we only need to know the appropriate subheader to find and we can figure out tags from there
-                       TableAxis("V__", "cond.V-"), #tags CANNOT have an underscore in name
-                       TableAxis("VV__", "cond.VV-")
+                       TableAxis("V__", "cond.V-"), #tags CANNOT have an underscore in name,
+                        TableAxis("CC__","cond.CC-"),
+                       TableAxis("VV__", "cond.VV-"),
+                       TableAxis("After Heavy", "cond.heavy-")
                    ]),
                    TableAxis("Plural", "plural", subheaders=[
                        TableAxis("C__","cond.C-"), #For relationships,if we restrict to subheaders, we only need to know the appropriate subheader to find and we can figure out tags from there
                        TableAxis("V__", "cond.V-"), #tags CANNOT have an underscore in name
-                       TableAxis("VV__", "cond.VV-")
+                       TableAxis("CC__","cond.CC-"),
+                       TableAxis("VV__", "cond.VV-"),
+                       TableAxis("After Heavy", "cond.heavy-")
                    ]),
                ],
                rows= [
