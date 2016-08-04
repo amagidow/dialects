@@ -85,3 +85,7 @@
 .titlebar a:active, .loginfloat a{
     color: white;
 }
+
+input[type=text]{
+    font-family: Verdana, Arial, sans-serif;
+}
