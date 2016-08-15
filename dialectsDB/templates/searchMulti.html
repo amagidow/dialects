@@ -43,6 +43,8 @@
 <strong>Instructions:</strong> Enter search parameters into the appropriate box. Click the plus button to add another search, and the minus button to remove one.
     Color will change the colors in the map view, or provide another category to sort by in the list view. Two searches with the same color will be treated as an "AND" search.
     The searches for Arabic words or annotations use a regex search. The search for gloss and tags use a 'contained in' search, so you may enter a partial gloss or tags to get a wider set of results.
+You can put an exclamation point at the beginning of any element of the search to exclude elements with that feature from the result, e.g. a NOT search. For tags, you can do this by the individual tag,
+    so a search for 'demonstrative.pronoun, !distal' will only show non-distal demonstratives.
 </div>
 
 <form id= "searchform"  method = "POST">

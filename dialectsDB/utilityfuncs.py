@@ -240,24 +240,46 @@ def searchText(request):
 def searchLanguageDatum(formdata, user):
     #print("request obj:{}".format(formdata))
     queryToReturn = permissionwrapper(user) #Have permission wrapper function here!
-    wordSearchText = formdata['wordSearch']
-    glossSearchText = formdata['glossSearch']
-    annotSearchText = formdata['annotationSearch']
-    tagSearchText = None or formdata['tagSearch']
+    wordSearchText = formdata['wordSearch'].strip()
+    glossSearchText = formdata['glossSearch'].strip()
+    annotSearchText = formdata['annotationSearch'].strip()
+    tagSearchText = None or formdata['tagSearch'].strip()
     #no idea how to handle tags just yet
     if wordSearchText:
-        queryToReturn = queryToReturn.filter(normalizedEntry__regex=wordSearchText)
+        if wordSearchText.startswith("!"):
+            wordSearchText = wordSearchText[1:] #should slice off the initial !
+            queryToReturn = queryToReturn.exclude(normalizedEntry__regex=wordSearchText)
+        else:
+            queryToReturn = queryToReturn.filter(normalizedEntry__regex=wordSearchText)
     if glossSearchText:
-        queryToReturn = queryToReturn.filter(gloss__contains=glossSearchText) #NO LONGER REGEX SEARCH! #NEEDS TO BE FIXED FOR MULTIGLOSS
+        if glossSearchText.startswith("!"):
+            glossSearchText = glossSearchText[1:]
+            queryToReturn = queryToReturn.exclude(gloss__contains=glossSearchText)
+        else:
+            queryToReturn = queryToReturn.filter(gloss__contains=glossSearchText) #NO LONGER REGEX SEARCH! #NEEDS TO BE FIXED FOR MULTIGLOSS
     if annotSearchText:
-        queryToReturn = queryToReturn.filter(annotation__regex=annotSearchText)
+        if annotSearchText.startswith("!"):
+            annotSearchText = annotSearchText[1:]
+            queryToReturn = queryToReturn.exclude(annotation__regex=annotSearchText)
+        else:
+            queryToReturn = queryToReturn.filter(annotation__regex=annotSearchText)
     if tagSearchText:
         tokenizedSearchText = tagSearchText.split(",")
-        tokenizedSearchText = filter(None,tokenizedSearchText)
-        for queryItem in tokenizedSearchText:
-            queryItem = queryItem.strip()
-            queryToReturn = queryToReturn.distinct().filter(entryTags__tagText__contains=queryItem)#can't be regex b/c of periods in tags
-    return queryToReturn
+        #following line filters out blanks, strips extra characters, and transforms this into a set
+        tokenizedSearchText = [item.strip() for item in tokenizedSearchText if item.strip()] #gets rid of whitespace and blanks
+        #This section allows for NOT searches by adding an exclamation point in front of tags
+        #I have not considered or tested how this would work if "anding" queries
+        tokenizedTagsNegative = [item for item in tokenizedSearchText if item.startswith("!")]
+        tokenizedTagsPositive = set(tokenizedSearchText) - set(tokenizedTagsNegative) #have to use sets to take advantage of operations
+        print(list(tokenizedSearchText))
+        print(tokenizedTagsPositive)
+        print(tokenizedTagsNegative)
+        for queryItem in tokenizedTagsPositive:
+            queryToReturn = queryToReturn.filter(entryTags__tagText__contains=queryItem)#can't be regex b/c of periods in tags
+        for negItem in tokenizedTagsNegative:
+            negItem = negItem[1:] #have to remove ! down here so that difference of sets above works
+            queryToReturn = queryToReturn.exclude(entryTags__tagText__contains=negItem)
+    return queryToReturn.distinct()
 
 def searchLanguageDatumColor(formdata, user): #Utility function to process a request based on the search bar
     color = formdata['colorinput']
