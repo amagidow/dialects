@@ -173,6 +173,12 @@ class Dialect(models.Model):
         sourcescs = [x.citationstring for x in sources]
         return "; ".join(sourcescs)
 
+    #produces a user readable string of the tags for that item
+    @property
+    def tagstring(self):
+        ts = [tag.tagText for tag in self.dialectTag.all()]
+        return ",".join(ts)
+
     class Meta:
         app_label = 'dialectsDB'
         ordering = ['dialectCode']

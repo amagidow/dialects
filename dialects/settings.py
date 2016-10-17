@@ -114,7 +114,7 @@ LEAFLET_CONFIG = {
     'TILES': [('OpenStreetMap.Mapnik', 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                {
                    'type': 'map',
-	                'attribution': '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'#,
+	                'attribution': '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'#,
 	                #'subdomains': '1234'
                })]
 }
