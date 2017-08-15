@@ -418,7 +418,7 @@ def crossSearchView(request):
                     et = [] #extratext
                     for x in filteredQS: #Go through each returned item, add it to the lists
                         dt.append(x.normalizedEntry)
-                        et.append(x.stringextra("&#013;&#010;"))
+                        et.append(x.stringextra("&#013;&#010;")) #adds the title text using a model function
                     #textofQS = (", ".join([x.normalizedEntry for x in filteredQS]), "&#013;&#010;&#013;&#010;".join([x.stringextra("&#013;&#010;") for x in filteredQS])) #converts queryset into list, thence into comma joined text - here is where only the normalized entry is shown
                     thisRow.append((", ".join(dt),"&#013;&#010;&#013;&#010;".join(et))) #append it as a tupple
                 bodyRows.append(thisRow)

@@ -4,6 +4,7 @@ __author__ = 'Magidow'
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models  #I think this makes django.db unnecessary
 from django.contrib.postgres.fields import HStoreField
+from django.utils.html import escape
 import collections, bibtexparser
 
 
@@ -101,9 +102,10 @@ class LanguageDatum(models.Model):
 
     def stringextra(self, breakchar): #serializing function to return nicely formatted string of additional data
         serialData = self.myserializer()
+
         returnstring = "Datum: {1}{0}Gloss: {2}{0}Annotation: {3}{0}Source: {4}({5}){0}Taglist: {6}".format(
-            breakchar, serialData['normEntry'], serialData['gloss'], serialData['annotation'], serialData['sourceName'],
-            serialData['sourceLoc'], serialData['tagsList']
+            breakchar, escape(serialData['normEntry']), escape(serialData['gloss']), escape(serialData['annotation']), escape(serialData['sourceName']),
+            escape(serialData['sourceLoc']), escape(serialData['tagsList'])
         )
         return returnstring
 
