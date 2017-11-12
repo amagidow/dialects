@@ -134,15 +134,25 @@ def complexTableView(request):
         if dialectForm.is_valid():
             result = dialectForm.cleaned_data
             #dialects = list(filter(None, result.get("dialectSearch").split(",")))
-            dialects = [x for x in result.get("dialectSearch").split(",") if x.strip()] #If there's data, put it into a list of dialects
+            dialects = [x.strip() for x in result.get("dialectSearch").split(",") if x.strip()] #If there's data, put it into a list of dialects
+            #for item in dialects: #this code here solved an unnecessary problem of getting dialect codes when all we really need is display names
+            #dialect_codes = []
+            #    try:
+            #        actualcode = Dialect.objects.get(dialectCodeDisplay = item).dialectCode
+            #        dialect_codes.append(actualcode)
+            #    except ObjectDoesNotExist:
+            #        pass
+                    # do nothing
+            #dialects = dialect_codes #BUG: When this list goes to the Jinja, it's the dialect codes and not the dialect name
             #print("DialectsCleaned: {}".format(dialects))
+            #print("DialectsCleanedCodes: {}".format(dialect_codes))
             paradigmname = result.get("paradigm")
             retrievedParadigm = paradigmDict[paradigmname]
             #add in section here to retrieve within paradigm tags, then add another variable to export it out to the render request as a separate variable
             radiosharedtags = [value.split("_") for key, value in querydata.items() if "optionsset" in key]
             radiosharedtags = [item for sublist in radiosharedtags for item in sublist] #Flattens out list in case there are lists of lists due to the split command above
-            print("Radio shared tags:")
-            print(radiosharedtags)
+            #print("Radio shared tags:")
+            #print(radiosharedtags)
             #print(radiosharedtags)
             return render(request, 'ComplexTableView.jinja', {'pageTitle': retrievedParadigm.paradigmname, 'paradigmDict': paradigmDict.items(),'dataStruct': retrievedParadigm,
                                                               'dialectForm': dialectForm, 'dialectList' : dialects, 'inparadigmtags' : radiosharedtags })
@@ -404,14 +414,14 @@ def crossSearchView(request):
                     mainsearchtext + searchText(msform.cleaned_data) + "\n"
             finalQS = mainQS.filter(dialect__in=dialectQS)
             headerRows.append("Main:" + mainsearchtext)
-            dialectsList = Dialect.objects.filter(languagedatum__in=finalQS).distinct().order_by('dialectCode') #only dialects which 'hit' for main query
+            dialectsList = Dialect.objects.filter(languagedatum__in=finalQS).distinct().order_by('dialectCodeDisplay') #only dialects which 'hit' for main query
             first = True
             columnQSs = [finalQS,]
             for csform in crossresults: #every one of these things is its own search
                 headerRows.append(searchText(csform.cleaned_data))
                 columnQSs.append(searchLanguageDatum(csform.cleaned_data, request.user)) #Each of these queries should include all of the results of these searches
             for dl in dialectsList: #For every dialect in the list returned, do
-                thisRow = [(dl.dialectCode, dl.dialectNameEn), ]
+                thisRow = [(str(dl), dl.dialectNameEn), ] #str(dl) should get the string function which should be dialect name
                 for cqs in columnQSs:
                     filteredQS = cqs.filter(dialect=dl) #queryset that only has that dialect per that query
                     dt = [] #datumtext
@@ -452,7 +462,7 @@ def dialectlistview(request):
     alldialects = Dialect.objects.all()
     dialectCount = alldialects.count()
     extrainfo = "Database contains a total of {} dialects".format(dialectCount)
-    listOut = [[a.dialectCode, a.dialectNameEn, a.centerLoc.y, a.centerLoc.x, a.tagstring, a.sourceciting] for a in alldialects]
+    listOut = [[str(a), a.dialectNameEn, a.centerLoc.y, a.centerLoc.x, a.tagstring, a.sourceciting] for a in alldialects]
 
     #print("Alltags: {}".format(listOut))
     return render(request, "infotable.html", {'pageTitle' : 'Dialect List', 'paradigmDict': paradigmDict.items(),

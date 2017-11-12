@@ -290,7 +290,7 @@ def searchLanguageDatumColor(formdata, user): #Utility function to process a req
 def generateMarkers(queryset):#Takes a tuple of (queryset,color) of language datums and returns a list of MakerInfo objects
     objectlist = []
     for item in queryset[0]: #changed 'item.gloss' to 'item.glossesString() which should be enough for all markers to work
-        newObject = MarkerInfo(location=item.dialect.centerLoc,entry=item.normalizedEntry,entrygloss=item.glossesString(),dialectname=item.dialect.dialectCode,sourcedoc=item.sourceDoc,sourceloc=item.sourceLocation,color=queryset[1], contributor=str(item.contributor), annotation=item.annotation, tags=item.entryTags.all())
+        newObject = MarkerInfo(location=item.dialect.centerLoc,entry=item.normalizedEntry,entrygloss=item.glossesString(),dialectname=str(item.dialect),sourcedoc=item.sourceDoc,sourceloc=item.sourceLocation,color=queryset[1], contributor=str(item.contributor), annotation=item.annotation, tags=item.entryTags.all())
         #print(newObject)
         objectlist.append(newObject)
     return objectlist

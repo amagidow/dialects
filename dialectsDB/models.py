@@ -44,11 +44,11 @@ class LanguageDatum(models.Model):
     )
     permissions = models.CharField(max_length=8, choices=PERMISSION_TYPES)
     def __str__(self):
-        displayDialectCode = str(self.dialect.dialectCode)
+        displayDialectCode = str(self.dialect)
         return ", ".join([self.normalizedEntry, self.glossesString(), displayDialectCode, self.annotation])
 
     def myserializer(self):  #for the moment, just using this for important stuff, not every single column
-        dialectName = str(self.dialect.dialectCode)
+        dialectName = str(self.dialect)
         dialectCoordsX = self.dialect.centerLoc.coords[0]
         dialectCoordsY = self.dialect.centerLoc.coords[1]
         sourceName = self.sourceDoc.bibTexKey
@@ -149,7 +149,8 @@ class Contributor(models.Model):
         return self.user.__str__()
 
 class Dialect(models.Model):
-    dialectCode = models.CharField("short code for location", max_length=10, unique=True, primary_key=True)
+    dialectCode = models.CharField("short code for location", max_length=10, unique=True, primary_key=True) #making this the model PK turns out to be really stupid. Next line is a hacky fix.
+    dialectCodeDisplay = models.CharField("changeable code for location", max_length=10, unique=True) #This gives us a modifiable dialect code that can be altered. Eventually need to remove dialectCode or change it to numeric PK
     dialectNameEn = models.TextField("human readable name of the dialect")
     dialectTag = models.ManyToManyField('DialectTag',blank=True, null=True)
     #dialectGroup = models.TextField("name of the type of group, e.g. Tribe.XXX, Sect.Shii", blank=True) #We'll use MainThing.Subthing terminology throughout
@@ -163,7 +164,7 @@ class Dialect(models.Model):
     regionLoc = models.MultiPolygonField("multipolygon geometry", blank=True,  null=True) #optional regional info
     objects = models.GeoManager()
     def __str__(self):
-        return self.dialectCode
+        return self.dialectCodeDisplay #use this to encapsulate which word I display
     #def save(self, *args, **kwargs):
     #    self.centerLoc = Point(self.centerLong, self.centerLat)
     #    super().save(*args, **kwargs)

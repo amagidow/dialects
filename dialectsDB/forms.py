@@ -40,6 +40,7 @@ class TagField(forms.Field):
 ########################FORMS#####################################
 class DatumBasicInfo(ModelForm): #This is just to get the basic information that will be shared on a page
     glosslang = forms.ChoiceField(choices = LANGUAGES,label="Gloss language", required=True)
+    dialect = forms.ModelChoiceField(queryset = Dialect.objects.order_by("dialectCodeDisplay"))
     class Meta:
         model = LanguageDatum
         fields = ('normalizationStyle','dialect', 'sourceDoc', 'permissions')
@@ -47,6 +48,7 @@ class DatumBasicInfo(ModelForm): #This is just to get the basic information that
 class DatumBasicInfoPgNo(DatumBasicInfo): #Would prefer to inherit this to DRY, but it's a PITA in django
     #Glosslang isn't really used, since paradigms aren't multilingual at this point
     #glosslang = forms.ChoiceField(choices = LANGUAGES,label="Gloss language", required=True)
+    dialect = forms.ModelChoiceField(queryset = Dialect.objects.order_by("dialectCodeDisplay"))
     class Meta:
         model = LanguageDatum
         fields = ('normalizationStyle','dialect', 'sourceDoc', 'sourceLocation', 'permissions')
@@ -160,7 +162,7 @@ class ParadigmSearchForm(forms.Form):
     #print("paradigm list:{}".format(paradigmlist))
     #    super().__init__()
     paradigm = forms.ChoiceField(choices=paradigmlist, label="Paradigm")
-    dialectSearch = forms.CharField(required=True, label='Dialects, comma split', widget=mywidgets.TagAutoWidget(Dialect.objects.all(), "dialectCode", attrs={'cols': 40, 'rows': 3}), )
+    dialectSearch = forms.CharField(required=True, label='Dialects, comma split', widget=mywidgets.TagAutoWidget(Dialect.objects.all(), "dialectCodeDisplay", attrs={'cols': 40, 'rows': 3}), )
 
 
 

@@ -19,7 +19,7 @@ class LingRelationshipInline(admin.TabularInline):
 
 
 class LanguageDatumAdmin(admin.ModelAdmin):
-    search_fields = ['normalizedEntry', 'gloss', 'annotation', 'dialect__dialectCode', 'entryTags__tagText', 'sourceDoc__bibTexKey', 'sourceDoc__author', 'sourceDoc__title']
+    search_fields = ['normalizedEntry', 'gloss', 'annotation', 'dialect__dialectCodeDisplay', 'entryTags__tagText', 'sourceDoc__bibTexKey', 'sourceDoc__author', 'sourceDoc__title']
     list_display = ['normalizedEntry', 'gloss', 'annotation', 'dialect', 'sourceDoc', 'sourceLocation', 'contributor']
     inlines = (LingRelationshipInline,)
     formfield_overrides = {
@@ -73,7 +73,7 @@ class DialectAdmin(admin.GeoModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': forms.Textarea(attrs={'rows':1, 'cols':60})}
     }
-    list_display = ['dialectCode', 'dialectNameEn']
+    list_display = ['dialectCodeDisplay', 'dialectNameEn']
     form = DialectAdminForm
 
     #formfield_overrides = {models.PointField: {'widget' : widgets.GeopositionWidget}}
