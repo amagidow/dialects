@@ -70,7 +70,7 @@ class StructuredTable(object):
         dialect = dialect.strip() #clear whitespace
         #Add User argument with default "none", hit the permission function first, filter on that
         myQuery = utilityfuncs.permissionwrapper(user)
-        myQuery = myQuery.filter(dialect__dialectCodeDisplay=dialect) #Need to have some user filtering here
+        myQuery = myQuery.filter(dialect__dialectCodeDisplay=dialect)  # fa#Need to have some user filtering here
         #print("Base languageDatum: {}".format(str(myQuery).encode('ascii', errors='backslashreplace')))
         tags = set(tags)
         tags = filter(None, tags) #remove blanks

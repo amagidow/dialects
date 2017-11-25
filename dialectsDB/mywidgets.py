@@ -20,7 +20,7 @@ class TagAutoWidget(widgets.Textarea):
             else:
                 self.itemlist.add(item)
         self.itemlist = sorted(self.itemlist)
-        #self.itemlist = set(self.itemlist) #Removes duplicates - just did a set from the start, more efficient
+        #self.itemlist = set(self.itemlist) #Removes duplicates - just did a set from the start, more efficient #fdas
         self.itemlist = ",".join(self.itemlist)
 
     def render(self,name,value,attrs=None):

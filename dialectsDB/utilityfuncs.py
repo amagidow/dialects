@@ -319,7 +319,7 @@ def cleanupMarkers(markers):
                 gavg = 0
                 bavg = 0
                 for item in collectedcolors:
-                    ravg += float(Color(item).get_red())
+                    ravg += float(Color(item).get_red()) # fda
                     gavg += float(Color(item).get_green())
                     bavg += float(Color(item).get_blue())
                 mainMember.color = Color(rgb=(ravg/len(collectedcolors),gavg/len(collectedcolors),bavg/len(collectedcolors))).get_hex_l()

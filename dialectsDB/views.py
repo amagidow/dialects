@@ -166,7 +166,7 @@ def complexTableView(request):
 
 #This view handles either map or list-style searches, since they are almost identical. Type is passed via the URLConfig
 #List-type view actually includes 'color' as a convenient shortcut for ANDing queries, and to produce groups
-def searchMultiType(request, type="map"):
+def searchMultiType(request, type="map"): #
     """
     This view handles either map or list-style searches, since they are almost identical. Type is passed via the URLConfig
     :param request: HTTP request

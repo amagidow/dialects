@@ -150,7 +150,7 @@ class Contributor(models.Model):
 
 class Dialect(models.Model):
     dialectCode = models.CharField("short code for location", max_length=10, unique=True, primary_key=True) #making this the model PK turns out to be really stupid. Next line is a hacky fix.
-    dialectCodeDisplay = models.CharField("changeable code for location", max_length=10, unique=True) #This gives us a modifiable dialect code that can be altered. Eventually need to remove dialectCode or change it to numeric PK
+    dialectCodeDisplay = models.CharField("changeable code for location", max_length=10, unique=True)  # fdadaThis gives us a modifiable dialect code that can be altered. Eventually need to remove dialectCode or change it to numeric PK
     dialectNameEn = models.TextField("human readable name of the dialect")
     dialectTag = models.ManyToManyField('DialectTag',blank=True, null=True)
     #dialectGroup = models.TextField("name of the type of group, e.g. Tribe.XXX, Sect.Shii", blank=True) #We'll use MainThing.Subthing terminology throughout

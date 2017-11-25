@@ -158,7 +158,7 @@ class NonModelSearchFormColor(NonModelSearchForm):
 class ParadigmSearchForm(forms.Form):
     #def __init__(self):
 
-    paradigmlist = [(key, paradigms.paradigmDict[key].paradigmname) for key in paradigms.paradigmDict]
+    paradigmlist = [(key, paradigms.paradigmDict[key].paradigmname) for key in paradigms.paradigmDict] #fda
     #print("paradigm list:{}".format(paradigmlist))
     #    super().__init__()
     paradigm = forms.ChoiceField(choices=paradigmlist, label="Paradigm")
