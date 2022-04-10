@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-from dialects.localsettings import *
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -19,21 +18,24 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Application definition
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
+    'django.contrib.contenttypes',
     'autocomplete_light',
     'django.contrib.admin',
     'django.contrib.auth',
-    'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'django.contrib.postgres',
-     'dialectsDB',
+    #'dialectsDB',
+    'dialectsDB.apps.dialectsDBConfig',
     'leaflet',
-    'djgeojson'
-  ,'django_jinja'
-)
+    'djgeojson',
+  'django_jinja'
+]
+
+from dialects.localsettings import *
 
 if LOCAL_INSTALLED_APPS: #Allows for having extra apps installed only on one of the servers
     INSTALLED_APPS = INSTALLED_APPS + LOCAL_INSTALLED_APPS
