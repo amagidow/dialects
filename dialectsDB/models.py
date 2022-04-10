@@ -159,9 +159,9 @@ class Dialect(models.Model):
     locationName = models.TextField("human readable location name", blank=True)
     locationNameAr = models.TextField("Arabic name of location if available", blank=True)
     centerLoc = models.PointField("a point representing this dialect", srid=4326)
-    #centerLat = models.FloatField("Latitude of center", blank=True, null=True)
-   #centerLong = models.FloatField("Longitude of center",  blank=True, null=True)
-    regionLoc = models.MultiPolygonField("multipolygon geometry", blank=True,  null=True) #optional regional info
+    centerLat = models.FloatField("Latitude of center", blank=True, null=True)
+    centerLong = models.FloatField("Longitude of center",  blank=True, null=True)
+    #regionLoc = models.MultiPolygonField("multipolygon geometry", blank=True,  null=True) #optional regional info
     objects = models.GeoManager()
     def __str__(self):
         return self.dialectCodeDisplay #use this to encapsulate which word I display
