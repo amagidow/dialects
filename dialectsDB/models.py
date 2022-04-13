@@ -162,7 +162,7 @@ class Dialect(models.Model):
     centerLat = models.FloatField("Latitude of center", blank=True, null=True)
     centerLong = models.FloatField("Longitude of center",  blank=True, null=True)
     #regionLoc = models.MultiPolygonField("multipolygon geometry", blank=True,  null=True) #optional regional info
-    objects = models.GeoManager()
+    #objects = models.GeoManager()
     def __str__(self):
         return self.dialectCodeDisplay #use this to encapsulate which word I display
     #def save(self, *args, **kwargs):

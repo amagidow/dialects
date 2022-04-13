@@ -69,7 +69,7 @@ class DialectAdminForm(forms.ModelForm):
        # }
 
 
-class DialectAdmin(admin.GeoModelAdmin):
+class DialectAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {'widget': forms.Textarea(attrs={'rows':1, 'cols':60})}
     }
@@ -100,7 +100,7 @@ admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
 
 admin.site.register(LanguageDatum, LanguageDatumAdmin)
-admin.site.register(Dialect, admin.OSMGeoAdmin)
+admin.site.register(Dialect, DialectAdmin)
 admin.site.register(EntryTag, EntryTagAdmin)
 admin.site.register(RelateTag,RelTagsAdmin)
 admin.site.register(BiblioEntryBibTex, BiblioAdmin)

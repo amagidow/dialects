@@ -2,8 +2,8 @@ from django.conf.urls import patterns, include, url
 from dialectsDB.views import *
 from django.contrib import admin
 from django.contrib.auth.views import login, logout
-from djgeojson.views import GeoJSONLayerView
-from django.views.generic import TemplateView
+#from djgeojson.views import GeoJSONLayerView
+#from django.views.generic import TemplateView
 from dialectsDB import paradigms
 admin.autodiscover()
 
