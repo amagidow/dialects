@@ -462,7 +462,7 @@ def dialectlistview(request):
     alldialects = Dialect.objects.all()
     dialectCount = alldialects.count()
     extrainfo = "Database contains a total of {} dialects".format(dialectCount)
-    listOut = [[str(a), a.dialectNameEn, a.centerLoc.y, a.centerLoc.x, a.tagstring, a.sourceciting] for a in alldialects]
+    listOut = [[str(a), a.dialectNameEn, a.centerLat, a.centerLong, a.tagstring, a.sourceciting] for a in alldialects]
 
     #print("Alltags: {}".format(listOut))
     return render(request, "infotable.html", {'pageTitle' : 'Dialect List', 'paradigmDict': paradigmDict.items(),

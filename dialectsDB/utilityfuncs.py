@@ -151,8 +151,8 @@ def processInputForm(sharedTags, querydata, defaultvalue=""):
 
 class MarkerInfo():#Class for storing information for markers
     def __init__(self,location,entry,entrygloss,dialectname, sourcedoc,color,sourceloc = None, annotation=None, contributor = None, tags = None):
-        self.geomLat = location.get_coords()[1] #have to extract out of this cause my life sucks
-        self.geomLong = location.get_coords()[0]
+        self.geomLat = location['lat'] #have to extract out of this cause my life sucks
+        self.geomLong = location['long']
         self.location = geojson.Point((self.geomLong, self.geomLat))
         self.entry = entry #the actual Arabic data
         self.entrygloss = entrygloss
@@ -290,7 +290,7 @@ def searchLanguageDatumColor(formdata, user): #Utility function to process a req
 def generateMarkers(queryset):#Takes a tuple of (queryset,color) of language datums and returns a list of MakerInfo objects
     objectlist = []
     for item in queryset[0]: #changed 'item.gloss' to 'item.glossesString() which should be enough for all markers to work
-        newObject = MarkerInfo(location=item.dialect.centerLoc,entry=item.normalizedEntry,entrygloss=item.glossesString(),dialectname=str(item.dialect),sourcedoc=item.sourceDoc,sourceloc=item.sourceLocation,color=queryset[1], contributor=str(item.contributor), annotation=item.annotation, tags=item.entryTags.all())
+        newObject = MarkerInfo(location={'lat' : item.dialect.centerLat, 'long': item.dialect.centerLong} ,entry=item.normalizedEntry,entrygloss=item.glossesString(),dialectname=str(item.dialect),sourcedoc=item.sourceDoc,sourceloc=item.sourceLocation,color=queryset[1], contributor=str(item.contributor), annotation=item.annotation, tags=item.entryTags.all())
         #print(newObject)
         objectlist.append(newObject)
     return objectlist

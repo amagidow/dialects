@@ -49,8 +49,8 @@ class LanguageDatum(models.Model):
 
     def myserializer(self):  #for the moment, just using this for important stuff, not every single column
         dialectName = str(self.dialect)
-        dialectCoordsX = self.dialect.centerLoc.coords[0]
-        dialectCoordsY = self.dialect.centerLoc.coords[1]
+        dialectCoordsX = self.dialect.centerLong #long is X, lat is y #self.dialect.centerLoc.coords[0]
+        dialectCoordsY = self.dialect.centerLat #self.dialect.centerLoc.coords[1]
         sourceName = self.sourceDoc.bibTexKey
         sourceLoc = self.sourceLocation
         #tagsListObj = EntryTag.objects.filter(LanguageDatum=self)
@@ -161,7 +161,7 @@ class Dialect(models.Model):
     centerLoc = models.PointField("a point representing this dialect", srid=4326)
     centerLat = models.FloatField("Latitude of center", blank=True, null=True)
     centerLong = models.FloatField("Longitude of center",  blank=True, null=True)
-    #regionLoc = models.MultiPolygonField("multipolygon geometry", blank=True,  null=True) #optional regional info
+    regionLoc = models.MultiPolygonField("multipolygon geometry", blank=True,  null=True) #optional regional info
     objects = models.GeoManager()
     def __str__(self):
         return self.dialectCodeDisplay #use this to encapsulate which word I display
