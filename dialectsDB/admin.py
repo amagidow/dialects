@@ -60,8 +60,8 @@ class EntryTagAdmin(admin.ModelAdmin):
 class DialectAdminForm(forms.ModelForm):
     class Meta:
         model = Dialect
-        centerLoc = forms.PointField(widget=forms.OSMWidget(attrs={
-            'display_raw': True}))
+        #centerLoc = forms.PointField(widget=forms.OSMWidget(attrs={
+        #    'display_raw': True}))
         fields = '__all__'
 
         #widgets = {
