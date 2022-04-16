@@ -1,8 +1,8 @@
 __author__ = 'Magidow'
 # coding=UTF-8
-#from django.db import models
+from django.db import models
 from django.contrib.auth.models import User
-from django.contrib.gis.db import models  #I think this makes django.db unnecessary
+#from django.contrib.gis.db import models  #I think this makes django.db unnecessary
 from django.contrib.postgres.fields import HStoreField
 from django.utils.html import escape
 import collections, bibtexparser

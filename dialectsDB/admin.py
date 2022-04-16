@@ -1,11 +1,11 @@
 # coding=UTF-8
 from django.contrib import admin
-from django.contrib.gis import admin
+#from django.contrib.gis import admin
 from dialectsDB.models import *
 #from geoposition import widgets
 from django import forms
-from django.contrib.gis import forms
-from django.contrib.gis.db import models
+#from django.contrib.gis import forms
+from django.db import models
 from django.contrib.auth.admin import UserAdmin
 from dialectsDB.utilityfuncs import permissionwrapper
 from django.contrib.admin.widgets import FilteredSelectMultiple
