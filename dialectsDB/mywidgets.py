@@ -23,7 +23,7 @@ class TagAutoWidget(widgets.Textarea):
         #self.itemlist = set(self.itemlist) #Removes duplicates - just did a set from the start, more efficient #fdas
         self.itemlist = ",".join(self.itemlist)
 
-    def render(self,name,value,attrs=None):
+    def render(self,name,value,attrs=None, renderer=None):
         widgetclasses = 'acwidgetmulti' if self.multi else 'acwidget'
         if attrs:
             attrs['acsource'] = self.itemlist

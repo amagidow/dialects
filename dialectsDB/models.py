@@ -32,11 +32,11 @@ class LanguageDatum(models.Model):
     annotation = models.TextField("additional information on the entry", blank=True)
     lingRelationship = models.ManyToManyField('self', through='LingRelationship', blank=True, symmetrical=False, related_name='relationships')
     entryTags = models.ManyToManyField('EntryTag',blank=True, null=True)
-    dialect = models.ForeignKey('Dialect')
+    dialect = models.ForeignKey('Dialect', on_delete=models.CASCADE)
     #source = models.ForeignKey('SourceIndex')#This is too normalized and annoying to deal with, replaced it with direct fields below
-    sourceDoc = models.ForeignKey('BiblioEntryBibTex', null=True)
+    sourceDoc = models.ForeignKey('BiblioEntryBibTex', null=True, on_delete=models.CASCADE)
     sourceLocation = models.TextField('location of datum in page or map number (p. or m. XX)', null=True, blank=True)
-    contributor = models.ForeignKey('Contributor') #once logged in, all activity will be related to contributors, or when data is imported.
+    contributor = models.ForeignKey('Contributor', on_delete=models.CASCADE) #once logged in, all activity will be related to contributors, or when data is imported.
     PERMISSION_TYPES = (
         ('Public', 'Fully public'),
         ('PubNoE', 'Public no export'),
@@ -132,7 +132,7 @@ class LanguageDatum(models.Model):
         app_label = 'dialectsDB' #these have to be here
 
 class Contributor(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User ,on_delete=models.CASCADE)
     blurb = models.CharField(max_length=500, blank=True)
     affiliation = models.CharField("academic affiliation",max_length=200, blank=True)
     webaddress = models.URLField("academic website", blank=True)
@@ -140,7 +140,7 @@ class Contributor(models.Model):
     defaultPermission = models.CharField("default permission setting for data input",max_length=8, choices=LanguageDatum.PERMISSION_TYPES)
     defaultEncoding = models.CharField("default transliteration style", max_length = 5, choices=NORM_STYLES)
     defaultLanguage = models.CharField("default language used for glosses", max_length = 5, choices=LANGUAGES)
-    collaborators = models.ManyToManyField('self',"collaborators who can view your private data",
+    collaborators = models.ManyToManyField(to='self',verbose_name="collaborators who can view your private data",
                                            help_text="note that this is NOT a symmetrical relationship- by making someone a collaborator, you are not able to see their private data",
                                            symmetrical=False, blank=True)
     class Meta:
@@ -208,9 +208,9 @@ class Dialect(models.Model):
 
 
 class LingRelationship(models.Model):
-    entryIsRelated = models.ForeignKey('LanguageDatum', related_name='+')
-    relateTag = models.ForeignKey('RelateTag')
-    entryRelatedTo = models.ForeignKey('LanguageDatum', related_name='+')
+    entryIsRelated = models.ForeignKey('LanguageDatum', related_name='+', on_delete=models.CASCADE)
+    relateTag = models.ForeignKey('RelateTag', on_delete=models.CASCADE)
+    entryRelatedTo = models.ForeignKey('LanguageDatum', related_name='+', on_delete=models.CASCADE)
     def __str__(self):
         return self.entryIsRelated.normalizedEntry + " is a "  + self.relateTag.tagText + " of " +  self.entryRelatedTo.normalizedEntry
         #return self.relateTag.tagText

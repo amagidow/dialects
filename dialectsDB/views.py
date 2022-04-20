@@ -179,7 +179,7 @@ def searchMultiType(request, type="map"): #
     targetPage = ""
     pagetitle = ""
     results = ''
-    if request.user.is_authenticated(): #If there's a user to get, make contributor equal to that user
+    if request.user.is_authenticated: #If there's a user to get, make contributor equal to that user
         contributor = Contributor.objects.get(user=request.user)
     else: #If not, it's null, will get passed to permission functions as null.
         contributor = None

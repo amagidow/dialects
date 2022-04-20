@@ -30,9 +30,9 @@ INSTALLED_APPS = (
     #'django.contrib.gis',
     'django.contrib.postgres',
      'dialectsDB',
-    'leaflet',
-    'djgeojson'
-  ,'django_jinja'
+    #'leaflet',
+    #'geojson',
+  'django_jinja'
 )
 
 if LOCAL_INSTALLED_APPS: #Allows for having extra apps installed only on one of the servers
@@ -63,7 +63,7 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
-                'django.core.context_processors.csrf'
+                'django.template.context_processors.csrf'
 
             ],
         }
@@ -86,7 +86,7 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
-                'django.core.context_processors.csrf'
+                'django.template.context_processors.csrf'
 
             ],
             'loaders' : [
