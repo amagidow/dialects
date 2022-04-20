@@ -8,6 +8,16 @@
         var collection2 = [ {{ results|safe }} ];
       {#  {% for item in qs_results %}{{ item|geojsonfeature:"popupinfo"|safe }}{% endfor %}; #}
 
+var map = L.map('map').setView([13, 30], 4);
+
+
+var OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+	maxZoom: 19,
+	attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+});
+
+
+OpenStreetMap_Mapnik.addTo(map);
 
       function onEachFeature(feature, layer) {
     if (feature.properties && feature.properties.popupinfo) {
@@ -32,6 +42,7 @@
       }
 
 
+main_map_init(map)
 
     </script>
 
