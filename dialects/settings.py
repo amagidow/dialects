@@ -14,6 +14,17 @@ import os
 from dialects.localsettings import *
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+MIDDLEWARE = (
+        'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+'django.contrib.messages.middleware.MessageMiddleware',
+'django.contrib.sessions.middleware.SessionMiddleware'
+)
 
 
 
