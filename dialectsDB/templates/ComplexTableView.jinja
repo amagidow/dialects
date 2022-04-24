@@ -42,7 +42,7 @@
 {##################MACROS#########################}
 {% set currentDialect = '' %}
 
-{% macro cellaction(cellglosstags, cellalltags, relatetags = '') -%}
+{% macro cellaction(cellglosstags, cellalltags, relatetags = '', currentDialect = '') -%}
 
     {% set allTags = cellalltags+cellglosstags+dataStruct.sharedtags+inparadigmtags %} {# This is where I need to add within paradigm tags #}
     {% set myQuery = dataStruct.getDatumsFromTags(currentDialect,allTags, request.user) %} {# Need to add permission function here #}

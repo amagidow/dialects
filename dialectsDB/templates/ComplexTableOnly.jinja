@@ -54,11 +54,11 @@
                         {% if subcol.relatedTo %}
                             {% set relatedtags = dataStruct.getGloss(cellglosstags) + ":" + cellglosstags|join("_") + "_" + column.getsubtags(subcol.relatedTo)|join("_") %}
                         {% endif %}
-                        {{ cellaction(cellglosstags,cellalltags,relatedtags) }}
+                        {{ cellaction(cellglosstags,cellalltags,relatedtags, currentDialect) }}
                     {% else %} {# multiple rows since column #}
                         {% set cellalltags = row.headertags + subrow.headertags +column.headertags %}
                         {% set cellID = dataStruct.getGloss(cellalltags) + ":" + cellalltags|join("_") %}
-                        {{ cellaction(cellalltags, cellalltags) }} {# no difference between the gloss and cell tags here #}
+                        {{ cellaction(cellalltags, cellalltags, '', currentDialect) }} {# no difference between the gloss and cell tags here #}
                        {# <td>{{ row.headername }},{{ subrow.headername }},{{ column.headername }}</td> #}
                     {% endfor %}
                 {% endfor %}
@@ -76,11 +76,11 @@
                         {% if subcol.relatedTo %}
                             {% set relatedtags = dataStruct.getGloss(cellglosstags) + ":" + cellglosstags|join("_") + "_" + column.getsubtags(subcol.relatedTo)|join("_") %}
                         {% endif %}
-                        {{ cellaction(cellglosstags, cellalltags,relatedtags) }}
+                        {{ cellaction(cellglosstags, cellalltags,relatedtags, currentDialect) }}
                     {% else %}
                         {% set cellalltags = row.headertags + column.headertags %}
                         {% set cellID = dataStruct.getGloss(cellalltags) + ":" + cellalltags|join("_") %}
-                        {{ cellaction(cellalltags,cellalltags) }}
+                        {{ cellaction(cellalltags,cellalltags, '', currentDialect) }}
                     {% endfor %}
                 {% endfor %}
             </tr>

@@ -11,7 +11,7 @@
 </div>
 
 {##################MACROS#########################}
-{% macro cellaction(cellglosstags, cellalltags, relatetags = '') -%}
+{% macro cellaction(cellglosstags, cellalltags, relatetags = '', currentDialect = '') -%}
     {% if dataStruct.inherit %}
         {% set glossTags = dataStruct.getGloss(cellalltags) %}
     {% else %}

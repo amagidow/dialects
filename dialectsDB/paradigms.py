@@ -67,19 +67,21 @@ class StructuredTable(object):
 
     def getDatumsFromTags(self,dialect, tags, user=None): #utilty function for in templates
         #print("DialectCode is: {}".format(dialect))
-        dialect = dialect.strip() #clear whitespace
+        dialect = dialect.strip()  if dialect else ""  #clear whitespace
+        print("Dialect is: " + dialect) #Current problem: Dialect is not coming in correctly
         #Add User argument with default "none", hit the permission function first, filter on that
         myQuery = utilityfuncs.permissionwrapper(user)
-        myQuery = myQuery.filter(dialect__dialectCodeDisplay=dialect)  # fa#Need to have some user filtering here
-        #print("Base languageDatum: {}".format(str(myQuery).encode('ascii', errors='backslashreplace')))
+        #print("Query from user: {}".format(str(myQuery).encode('ascii', errors='backslashreplace')))
+        myQuery = myQuery.filter(dialect__dialectCodeDisplay=dialect)
+        print("Base languageDatum: {}".format(str(myQuery).encode('ascii', errors='backslashreplace')))
         tags = set(tags)
         tags = filter(None, tags) #remove blanks
-        #print("Tags to Retrieve are: {}".format(tags))
-        #print("getDatumFromTags:{}".format(tags))
+        print("Tags to Retrieve are: {}".format(tags))
+        print("getDatumFromTags:{}".format(tags))
         for tag in tags:
             tag = tag.strip()
             myQuery = myQuery.filter(entryTags__tagText=tag)
-            #print("QueryReturned: {}".format(str(myQuery).encode('ascii', errors='backslashreplace')))
+            print("QueryReturned: {}".format(str(myQuery).encode('ascii', errors='backslashreplace')))
         return myQuery
 
 

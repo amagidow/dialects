@@ -341,7 +341,7 @@ def removeJustIntag():
 #If contributor is not defined, it only export
 def permissionwrapper(user=None, export = False):
     if user:
-        if user.is_active and user.is_authenticated:
+        if user.is_active and user.is_authenticated: #THEORY: issue with paradigm view is in here?
             contrib = Contributor.objects.get(user=user)
             #Naming convention for set is to the original model, hence you get contributor_set here, not 'collaborators_set'
             contributorSet = contrib.contributor_set.all() #Gets all the people who have selected this user as contributors
