@@ -1,9 +1,9 @@
 __author__ = 'Alex'
 from django.forms import widgets
-from django.shortcuts import render_to_response
-from django.template.loader import render_to_string
+#from django.shortcuts import render_to_response
+#from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
-from django.utils.html import format_html
+#from django.utils.html import format_html
 
 class TagAutoWidget(widgets.Textarea):
     #Takes either a queryset+field name, or if no field name, any iterable

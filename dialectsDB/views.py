@@ -1,4 +1,4 @@
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render
 from django.forms.models import modelformset_factory, formset_factory
 from dialectsDB.models import *
 from dialectsDB.forms import *
