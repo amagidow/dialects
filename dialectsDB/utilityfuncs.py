@@ -97,8 +97,12 @@ def datumsToObjs(genericInfo, datumsList, inputlang="en"): #generic info is a La
 def addTagstoLanguageDatum(languagedatum,tags): #tags is a list
     for tag in tags:
             try:
+                #print("about to get tag" + tag)
                 currentTag = EntryTag.objects.get(tagText=tag.strip())
+                #print("currently processing tag: " + str(currentTag))
+                #print("languagedatum of type " + str(type(languagedatum)) + " is " + str(languagedatum))
                 languagedatum.entryTags.add(currentTag)
+                #print("Got past adding")
             except ObjectDoesNotExist:
                 print('Tag doesn\'t have an entry!?!')
                 print('current tag:')
@@ -341,7 +345,7 @@ def removeJustIntag():
 #If contributor is not defined, it only export
 def permissionwrapper(user=None, export = False):
     if user:
-        if user.is_active and user.is_authenticated: #THEORY: issue with paradigm view is in here?
+        if user.is_active and user.is_authenticated:
             contrib = Contributor.objects.get(user=user)
             #Naming convention for set is to the original model, hence you get contributor_set here, not 'collaborators_set'
             contributorSet = contrib.contributor_set.all() #Gets all the people who have selected this user as contributors

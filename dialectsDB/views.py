@@ -108,10 +108,14 @@ def complexTableInput(request,paradigmname,toggleAnnot="A"):
             inputlanguage = retrievedParadigm.glosslang
             combinedDict = processInputForm(sharedTags, querydata, retrievedParadigm.defaultvalue)
             datumsToObjs(initialObject,combinedDict)
-        return render(request, 'ComplexTableInput.jinja', {'pageTitle': retrievedParadigm.paradigmname,'paradigmDict': paradigmDict.items(),  'output': combinedDict, 'dialectForm': dialectForm, 'dataStruct': retrievedParadigm})
+        return render(request, 'ComplexTableInput.jinja', {'pageTitle': retrievedParadigm.paradigmname,
+                                                           'paradigmDict': paradigmDict.items(),  'output': combinedDict,
+                                                           'dialectForm': dialectForm, 'dataStruct': retrievedParadigm})
     else:
-        dialectForm = DatumBasicInfoPgNo(initial={'normalizationStyle': contributor.defaultEncoding , 'permissions': contributor.defaultPermission})
-    return render(request,'ComplexTableInput.jinja', {'pageTitle': retrievedParadigm.paradigmname,'paradigmDict': paradigmDict.items(), 'output': combinedDict, 'dialectForm': dialectForm, 'dataStruct': retrievedParadigm})
+        dialectForm = DatumBasicInfoPgNo(initial={'normalizationStyle': contributor.defaultEncoding ,
+                                                  'permissions': contributor.defaultPermission})
+    return render(request,'ComplexTableInput.jinja', {'pageTitle': retrievedParadigm.paradigmname,
+                                                      'paradigmDict': paradigmDict.items(), 'output': combinedDict, 'dialectForm': dialectForm, 'dataStruct': retrievedParadigm})
 
 
 
@@ -154,8 +158,10 @@ def complexTableView(request):
             #print("Radio shared tags:")
             #print(radiosharedtags)
             #print(radiosharedtags)
-            return render(request, 'ComplexTableView.jinja', {'pageTitle': retrievedParadigm.paradigmname, 'paradigmDict': paradigmDict.items(),'dataStruct': retrievedParadigm,
-                                                              'dialectForm': dialectForm, 'dialectList' : dialects, 'inparadigmtags' : radiosharedtags })
+            return render(request, 'ComplexTableView.jinja', {'pageTitle': retrievedParadigm.paradigmname,
+                                                              'paradigmDict': paradigmDict.items(),'dataStruct': retrievedParadigm,
+                                                              'dialectForm': dialectForm, 'dialectList' : dialects,
+                                                              'inparadigmtags' : radiosharedtags })
     else:
         dialectForm = ParadigmSearchForm()
     return render(request, 'ComplexTableView.jinja', {'pageTitle': retrievedParadigm.paradigmname, 'paradigmDict': paradigmDict.items(),'dataStruct': retrievedParadigm,
